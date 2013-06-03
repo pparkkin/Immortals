@@ -10,21 +10,10 @@
   <artifactId>ImmortalsServer</artifactId>
   <version>1.0-SNAPSHOT</version>
   <name>${project.artifactId}</name>
-  <description>My wonderfull scala app</description>
-  <inceptionYear>2010</inceptionYear>
-  <licenses>
-    <license>
-      <name>My License</name>
-      <url>http://....</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
 
   <properties>
-    <maven.compiler.source>1.5</maven.compiler.source>
-    <maven.compiler.target>1.5</maven.compiler.target>
     <encoding>UTF-8</encoding>
-    <scala.version>2.8.0</scala.version>
+    <scala.version>2.10.0</scala.version>
   </properties>
 
 <!--
@@ -53,21 +42,9 @@
 
     <!-- Test -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.8.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.scala-tools.testing</groupId>
-      <artifactId>specs_${scala.version}</artifactId>
-      <version>1.6.5</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.scalatest</groupId>
-      <artifactId>scalatest</artifactId>
-      <version>1.2</version>
+      <artifactId>scalatest_2.10</artifactId>
+      <version>1.9.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -88,9 +65,11 @@
             </goals>
             <configuration>
               <args>
+                  <!--
                 <arg>-make:transitive</arg>
                 <arg>-dependencyfile</arg>
                 <arg>${project.build.directory}/.scala_dependencies</arg>
+                -->
               </args>
             </configuration>
           </execution>
@@ -112,5 +91,38 @@
         </configuration>
       </plugin>
     </plugins>
+    <pluginManagement>
+    	<plugins>
+    		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+    		<plugin>
+    			<groupId>org.eclipse.m2e</groupId>
+    			<artifactId>lifecycle-mapping</artifactId>
+    			<version>1.0.0</version>
+    			<configuration>
+    				<lifecycleMappingMetadata>
+    					<pluginExecutions>
+    						<pluginExecution>
+    							<pluginExecutionFilter>
+    								<groupId>org.scala-tools</groupId>
+    								<artifactId>
+    									maven-scala-plugin
+    								</artifactId>
+    								<versionRange>
+    									[2.15.0,)
+    								</versionRange>
+    								<goals>
+    									<goal>testCompile</goal>
+    								</goals>
+    							</pluginExecutionFilter>
+    							<action>
+    								<ignore></ignore>
+    							</action>
+    						</pluginExecution>
+    					</pluginExecutions>
+    				</lifecycleMappingMetadata>
+    			</configuration>
+    		</plugin>
+    	</plugins>
+    </pluginManagement>
   </build>
 </project>
