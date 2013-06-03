@@ -39,6 +39,11 @@
       <artifactId>scala-library</artifactId>
       <version>${scala.version}</version>
     </dependency>
+      <dependency>
+          <groupId>com.typesafe.akka</groupId>
+          <artifactId>akka-actor_2.10</artifactId>
+          <version>2.1.4</version>
+      </dependency>
 
     <!-- Test -->
     <dependency>
@@ -57,6 +62,19 @@
         <groupId>org.scala-tools</groupId>
         <artifactId>maven-scala-plugin</artifactId>
         <version>2.15.0</version>
+          <configuration>
+              <launchers>
+                  <launcher>
+                      <id>ImmortalsServer.main</id>
+                      <mainClass>pparkkin.games.immortals.server.ImmortalsServer</mainClass>
+                  </launcher>
+              </launchers>
+              <args>
+                  <arg>-unchecked</arg>
+                  <arg>-deprecation</arg>
+                  <arg>-feature</arg>
+              </args>
+          </configuration>
         <executions>
           <execution>
             <goals>
