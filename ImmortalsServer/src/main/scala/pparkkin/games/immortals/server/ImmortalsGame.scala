@@ -9,7 +9,7 @@ class ImmortalsGame extends Actor with ActorLogging {
   def receive = {
     case Start =>
       log.info("Game start.")
-      self ! End
+      //self ! End
     case End =>
       log.info("Game end.")
       context.system.shutdown()
