@@ -39,8 +39,13 @@
       <artifactId>scala-library</artifactId>
       <version>${scala.version}</version>
     </dependency>
+      <dependency>
+          <groupId>org.scala-lang</groupId>
+          <artifactId>scala-swing</artifactId>
+          <version>${scala.version}</version>
+      </dependency>
 
-    <!-- Test -->
+      <!-- Test -->
     <dependency>
       <groupId>org.scalatest</groupId>
       <artifactId>scalatest_2.10</artifactId>
@@ -57,6 +62,19 @@
         <groupId>org.scala-tools</groupId>
         <artifactId>maven-scala-plugin</artifactId>
         <version>2.15.0</version>
+          <configuration>
+              <launchers>
+                  <launcher>
+                      <id>ImmortalsClient.main</id>
+                      <mainClass>pparkkin.games.immortals.client.ImmortalsClient</mainClass>
+                  </launcher>
+              </launchers>
+              <args>
+                  <arg>-unchecked</arg>
+                  <arg>-deprecation</arg>
+                  <arg>-feature</arg>
+              </args>
+          </configuration>
         <executions>
           <execution>
             <goals>
