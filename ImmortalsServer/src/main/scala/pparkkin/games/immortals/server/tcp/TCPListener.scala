@@ -11,6 +11,7 @@ class TCPListener(port: Int, dataProcessor: ActorRef) extends Actor with ActorLo
 
   def receive = {
     case IO.NewClient(server) =>
+      log.info("New client.")
       server.accept()
     case IO.Read(rHandle, bytes) =>
       dataProcessor ! Process(bytes)
