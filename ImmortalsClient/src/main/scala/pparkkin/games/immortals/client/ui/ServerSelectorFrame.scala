@@ -2,8 +2,10 @@ package pparkkin.games.immortals.client.ui
 
 import swing.{Button, FlowPanel, TextField, Frame}
 import swing.event.{WindowClosing, ButtonClicked}
+import akka.actor.ActorRef
+import pparkkin.games.immortals.client.controller.ConnectServer
 
-class ServerSelectorFrame extends Frame {
+class ServerSelectorFrame(controller: ActorRef) extends Frame {
   val field = new TextField {
     columns = 12
   }
@@ -19,7 +21,8 @@ class ServerSelectorFrame extends Frame {
   listenTo(button, this)
   reactions += {
     case ButtonClicked(b) =>
-      System.exit(0)
+      controller ! ConnectServer(field.text)
+      this.dispose()
     case WindowClosing(w) =>
       System.exit(1)
   }

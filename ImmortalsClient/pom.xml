@@ -44,6 +44,11 @@
           <artifactId>scala-swing</artifactId>
           <version>${scala.version}</version>
       </dependency>
+      <dependency>
+          <groupId>com.typesafe.akka</groupId>
+          <artifactId>akka-actor_2.10</artifactId>
+          <version>2.1.4</version>
+      </dependency>
 
       <!-- Test -->
     <dependency>
