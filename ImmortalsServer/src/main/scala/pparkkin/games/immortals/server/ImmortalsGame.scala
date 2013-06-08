@@ -1,9 +1,9 @@
 package pparkkin.games.immortals.server
 
 import akka.actor._
+import pparkkin.games.immortals.tcp.End
 
 case class Start()
-case class End()
 
 class ImmortalsGame extends Actor with ActorLogging {
   def receive = {

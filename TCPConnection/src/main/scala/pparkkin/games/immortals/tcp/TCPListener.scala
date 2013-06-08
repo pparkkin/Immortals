@@ -1,4 +1,4 @@
-package pparkkin.games.immortals.server.tcp
+package pparkkin.games.immortals.tcp
 
 import akka.actor._
 import java.net.InetSocketAddress

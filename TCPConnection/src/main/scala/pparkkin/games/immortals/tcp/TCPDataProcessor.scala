@@ -1,9 +1,12 @@
-package pparkkin.games.immortals.server.tcp
+package pparkkin.games.immortals.tcp
 
 import akka.actor._
 import akka.util.ByteString
-import pparkkin.games.immortals.server.End
 
+// Messages to/from game
+case class End()
+
+// Messages to/from network
 case class Process(bytes: ByteString)
 
 class TCPDataProcessor(game: ActorRef) extends Actor with ActorLogging {

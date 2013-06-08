@@ -1,7 +1,7 @@
 package pparkkin.games.immortals.server
 
 import akka.actor.ActorSystem
-import tcp.{TCPListener, TCPDataProcessor}
+import pparkkin.games.immortals.tcp.{TCPDataProcessor, TCPListener}
 
 object ImmortalsServer extends App {
   val system = ActorSystem("ImmortalsServer")
