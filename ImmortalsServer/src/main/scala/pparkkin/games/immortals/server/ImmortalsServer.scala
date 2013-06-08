@@ -1,13 +1,10 @@
 package pparkkin.games.immortals.server
 
 import akka.actor.ActorSystem
-import pparkkin.games.immortals.tcp.{TCPDataProcessor, TCPListener}
+import controller.ServerController
+import java.net.InetSocketAddress
 
 object ImmortalsServer extends App {
   val system = ActorSystem("ImmortalsServer")
-  val game = ImmortalsGame.newInstance(system)
-  val dp = TCPDataProcessor.newInstance(system, game)
-  val listener = TCPListener.newInstance(system, 1204, dp)
-  game ! Start
-
+  var controller = ServerController.newInstance(system, new InetSocketAddress("localhost", 1204))
 }

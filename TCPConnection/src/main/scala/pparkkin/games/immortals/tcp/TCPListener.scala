@@ -3,23 +3,24 @@ package pparkkin.games.immortals.tcp
 import akka.actor._
 import java.net.InetSocketAddress
 
-class TCPListener(port: Int, dataProcessor: ActorRef) extends Actor with ActorLogging {
+class TCPListener(address: InetSocketAddress, dataProcessor: ActorRef) extends Actor with ActorLogging {
 
   override def preStart {
-    IOManager(context.system) listen new InetSocketAddress(port)
+    IOManager(context.system) listen address
   }
 
   def receive = {
     case IO.NewClient(server) =>
       log.info("New client.")
       server.accept()
-    case IO.Read(rHandle, bytes) =>
+    case IO.Read(socket, bytes) =>
       dataProcessor ! Process(bytes)
   }
 }
 
 object TCPListener {
-  def newInstance(system: ActorSystem, port: Int, dataProcessor: ActorRef): ActorRef = {
-    system.actorOf(Props(new TCPListener(port, dataProcessor)), "TCPListener")
+  def newInstance(system: ActorRefFactory, address: InetSocketAddress, controller: ActorRef): ActorRef = {
+    val dp = TCPDataProcessor.newInstance(system, controller)
+    system.actorOf(Props(new TCPListener(address, dp)), "TCPListener")
   }
 }
