@@ -7,13 +7,13 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
   <groupId>pparkkin.games.immortals</groupId>
-  <artifactId>ImmortalsClient</artifactId>
+  <artifactId>TCPConnection</artifactId>
   <version>1.0-SNAPSHOT</version>
   <name>${project.artifactId}</name>
 
   <properties>
     <encoding>UTF-8</encoding>
-    <scala.version>2.10.0</scala.version>
+    <scala.version>2.10.1</scala.version>
   </properties>
 
 <!--
@@ -40,19 +40,9 @@
       <version>${scala.version}</version>
     </dependency>
       <dependency>
-          <groupId>org.scala-lang</groupId>
-          <artifactId>scala-swing</artifactId>
-          <version>${scala.version}</version>
-      </dependency>
-      <dependency>
           <groupId>com.typesafe.akka</groupId>
           <artifactId>akka-actor_2.10</artifactId>
           <version>2.1.4</version>
-      </dependency>
-      <dependency>
-          <groupId>pparkkin.games.immortals</groupId>
-          <artifactId>TCPConnection</artifactId>
-          <version>1.0-SNAPSHOT</version>
       </dependency>
 
   </dependencies>
@@ -65,19 +55,6 @@
         <groupId>org.scala-tools</groupId>
         <artifactId>maven-scala-plugin</artifactId>
         <version>2.15.0</version>
-          <configuration>
-              <launchers>
-                  <launcher>
-                      <id>ImmortalsClient.main</id>
-                      <mainClass>pparkkin.games.immortals.client.ImmortalsClient</mainClass>
-                  </launcher>
-              </launchers>
-              <args>
-                  <arg>-unchecked</arg>
-                  <arg>-deprecation</arg>
-                  <arg>-feature</arg>
-              </args>
-          </configuration>
         <executions>
           <execution>
             <goals>
@@ -85,13 +62,6 @@
               <goal>testCompile</goal>
             </goals>
             <configuration>
-              <args>
-                  <!--
-                <arg>-make:transitive</arg>
-                <arg>-dependencyfile</arg>
-                <arg>${project.build.directory}/.scala_dependencies</arg>
-                -->
-              </args>
             </configuration>
           </execution>
         </executions>
@@ -112,38 +82,5 @@
         </configuration>
       </plugin>
     </plugins>
-    <pluginManagement>
-    	<plugins>
-    		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-    		<plugin>
-    			<groupId>org.eclipse.m2e</groupId>
-    			<artifactId>lifecycle-mapping</artifactId>
-    			<version>1.0.0</version>
-    			<configuration>
-    				<lifecycleMappingMetadata>
-    					<pluginExecutions>
-    						<pluginExecution>
-    							<pluginExecutionFilter>
-    								<groupId>org.scala-tools</groupId>
-    								<artifactId>
-    									maven-scala-plugin
-    								</artifactId>
-    								<versionRange>
-    									[2.15.0,)
-    								</versionRange>
-    								<goals>
-    									<goal>testCompile</goal>
-    								</goals>
-    							</pluginExecutionFilter>
-    							<action>
-    								<ignore></ignore>
-    							</action>
-    						</pluginExecution>
-    					</pluginExecutions>
-    				</lifecycleMappingMetadata>
-    			</configuration>
-    		</plugin>
-    	</plugins>
-    </pluginManagement>
   </build>
 </project>

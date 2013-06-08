@@ -1,14 +1,14 @@
-package pparkkin.games.immortals.client.tcp
+package pparkkin.games.immortals.tcp
 
 import akka.actor._
 import java.net.InetSocketAddress
-import util.{Try, Success}
 import akka.actor.IO.{SocketHandle, Connected}
 import akka.util.ByteString
 
 case class Send(data: String)
 
 class TCPConnection(address: InetSocketAddress) extends Actor with ActorLogging {
+  var listeners: Set[ActorRef] = Set()
   override def preStart = {
     IOManager(context.system) connect address
   }
@@ -26,8 +26,7 @@ class TCPConnection(address: InetSocketAddress) extends Actor with ActorLogging 
 }
 
 object TCPConnection {
-  def connect(system: ActorSystem, address: InetSocketAddress): Try[ActorRef] = {
-    val conn = system.actorOf(Props(new TCPConnection(address)))
-    Success(conn)
+  def connect(system: ActorRefFactory, address: InetSocketAddress): ActorRef = {
+    system.actorOf(Props(new TCPConnection(address)))
   }
 }

@@ -112,6 +112,7 @@
   <modules>
     <module>ImmortalsServer</module>
     <module>ImmortalsClient</module>
+    <module>TCPConnection</module>
   </modules>
   <build>
   	<pluginManagement>
@@ -138,7 +139,7 @@
   									</goals>
   								</pluginExecutionFilter>
   								<action>
-  									<ignore></ignore>
+  									<ignore/>
   								</action>
   							</pluginExecution>
   						</pluginExecutions>

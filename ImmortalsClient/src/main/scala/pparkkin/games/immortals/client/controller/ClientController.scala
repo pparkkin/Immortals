@@ -2,9 +2,9 @@ package pparkkin.games.immortals.client.controller
 
 import akka.actor._
 import java.net.InetSocketAddress
-import pparkkin.games.immortals.client.tcp.TCPConnection
 import util.{Success, Failure}
 import pparkkin.games.immortals.client.ui.ServerSelectorFrame
+import pparkkin.games.immortals.tcp.TCPConnection
 
 case class Exit()
 case class SelectServer()
@@ -19,13 +19,8 @@ class ClientController() extends Actor with ActorLogging {
     case ConnectServer(server) =>
       val addr = new InetSocketAddress(server, 1204)
       log.info("Connecting to "+addr.toString)
-      TCPConnection.connect(context.system, addr) match {
-        case Failure(t) =>
-          log.error(t, "Connection failure.")
-          self ! Exit
-        case Success(conn) =>
-          GameController.newInstance(context, conn)
-      }
+      val conn = TCPConnection.connect(context.system, addr)
+      GameController.newInstance(context, conn)
   }
 }
 
