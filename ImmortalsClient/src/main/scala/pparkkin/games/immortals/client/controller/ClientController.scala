@@ -11,8 +11,6 @@ case class SelectServer()
 case class ConnectServer(server: String)
 
 class ClientController() extends Actor with ActorLogging {
-  var serverConnection: Option[ActorRef] = None
-
   def receive = {
     case Exit =>
       System.exit(0)
@@ -21,12 +19,12 @@ class ClientController() extends Actor with ActorLogging {
     case ConnectServer(server) =>
       val addr = new InetSocketAddress(server, 1204)
       log.info("Connecting to "+addr.toString)
-      serverConnection = TCPConnection.connect(context.system, addr) match {
-        case Success(conn) => Some(conn)
+      TCPConnection.connect(context.system, addr) match {
         case Failure(t) =>
           log.error(t, "Connection failure.")
           self ! Exit
-          None
+        case Success(conn) =>
+          GameController.newInstance(context, conn)
       }
   }
 }
