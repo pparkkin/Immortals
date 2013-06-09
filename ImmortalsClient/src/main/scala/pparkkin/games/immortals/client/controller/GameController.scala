@@ -18,6 +18,6 @@ class GameController(address: InetSocketAddress) extends Actor with ActorLogging
 
 object GameController {
   def newInstance(factory: ActorRefFactory, address: InetSocketAddress): ActorRef = {
-    factory.actorOf(Props(new GameController(address)))
+    factory.actorOf(Props(new GameController(address)), "GameController")
   }
 }

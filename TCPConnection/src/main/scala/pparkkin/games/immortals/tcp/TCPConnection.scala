@@ -10,15 +10,15 @@ case class End()
 case class Process(bytes: ByteString)
 case class Send(data: String)
 
-class TCPDataProcessor(controller: ActorRef) extends Actor with ActorLogging {
+class TCPConnection(controller: ActorRef) extends Actor with ActorLogging {
   def receive = {
     case Process(bytes) =>
       controller ! End
   }
 }
 
-object TCPDataProcessor {
+object TCPConnection {
   def newInstance(system: ActorRefFactory, controller: ActorRef): ActorRef = {
-    system.actorOf(Props(new TCPDataProcessor(controller)), "TCPDataProcessor")
+    system.actorOf(Props(new TCPConnection(controller)), "TCPConnection")
   }
 }

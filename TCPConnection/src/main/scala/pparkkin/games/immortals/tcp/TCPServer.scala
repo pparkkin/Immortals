@@ -20,7 +20,7 @@ class TCPServer(address: InetSocketAddress, dataProcessor: ActorRef) extends Act
 
 object TCPServer {
   def newInstance(system: ActorRefFactory, address: InetSocketAddress, controller: ActorRef): ActorRef = {
-    val dp = TCPDataProcessor.newInstance(system, controller)
-    system.actorOf(Props(new TCPServer(address, dp)), "TCPListener")
+    val dp = TCPConnection.newInstance(system, controller)
+    system.actorOf(Props(new TCPServer(address, dp)), "TCPServer")
   }
 }
