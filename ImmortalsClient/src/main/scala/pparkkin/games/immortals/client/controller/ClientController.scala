@@ -19,8 +19,7 @@ class ClientController() extends Actor with ActorLogging {
     case ConnectServer(server) =>
       val addr = new InetSocketAddress(server, 1204)
       log.info("Connecting to "+addr.toString)
-      val conn = TCPConnection.connect(context.system, addr)
-      GameController.newInstance(context, conn)
+      GameController.newInstance(context, addr)
   }
 }
 

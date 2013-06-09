@@ -7,7 +7,7 @@ import akka.util.ByteString
 
 case class Send(data: String)
 
-class TCPConnection(address: InetSocketAddress) extends Actor with ActorLogging {
+class TCPConnection(address: InetSocketAddress, dataProcessor: ActorRef) extends Actor with ActorLogging {
   var listeners: Set[ActorRef] = Set()
   override def preStart = {
     IOManager(context.system) connect address
@@ -17,6 +17,7 @@ class TCPConnection(address: InetSocketAddress) extends Actor with ActorLogging 
     case Connected(h, _) =>
       log.info("Connected to server.")
       context.become(connected(h))
+      h.write(ByteString("J:Paavo"))
   }
 
   def connected(handle: SocketHandle): Receive = {
@@ -26,7 +27,8 @@ class TCPConnection(address: InetSocketAddress) extends Actor with ActorLogging 
 }
 
 object TCPConnection {
-  def connect(system: ActorRefFactory, address: InetSocketAddress): ActorRef = {
-    system.actorOf(Props(new TCPConnection(address)))
+  def connect(system: ActorRefFactory, address: InetSocketAddress, controller: ActorRef): ActorRef = {
+    val dp = TCPDataProcessor.newInstance(system, controller)
+    system.actorOf(Props(new TCPConnection(address, dp)), "TCPConnection")
   }
 }
