@@ -25,8 +25,8 @@ class TCPClient(address: InetSocketAddress, dataProcessor: ActorRef) extends Act
 }
 
 object TCPClient {
-  def connect(system: ActorRefFactory, address: InetSocketAddress, controller: ActorRef): ActorRef = {
-    val dp = TCPConnection.newInstance(system, controller)
-    system.actorOf(Props(new TCPClient(address, dp)), "TCPClient")
-  }
+//  def connect(system: ActorRefFactory, address: InetSocketAddress, controller: ActorRef): ActorRef = {
+//    val dp = TCPConnection.newInstance(system, controller)
+//    system.actorOf(Props(new TCPClient(address, dp)), "TCPClient")
+//  }
 }
