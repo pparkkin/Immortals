@@ -2,16 +2,14 @@ package pparkkin.games.immortals.client.controller
 
 import akka.actor._
 import pparkkin.games.immortals.client.ui.GameFrame
-import pparkkin.games.immortals.tcp.TCPConnection
+import pparkkin.games.immortals.tcp.TCPClient
 import java.net.InetSocketAddress
 
 case class Quit()
 
 class GameController(address: InetSocketAddress) extends Actor with ActorLogging {
-  override def preStart = {
-    GameFrame.open(self)
-    TCPConnection.connect(context, address, self)
-  }
+  GameFrame.open(self)
+  TCPClient.connect(context, address, self)
 
   def receive = {
     case Quit => System.exit(0)

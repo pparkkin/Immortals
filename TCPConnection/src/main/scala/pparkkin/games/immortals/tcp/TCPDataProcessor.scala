@@ -8,6 +8,7 @@ case class End()
 
 // Messages to/from network
 case class Process(bytes: ByteString)
+case class Send(data: String)
 
 class TCPDataProcessor(controller: ActorRef) extends Actor with ActorLogging {
   def receive = {

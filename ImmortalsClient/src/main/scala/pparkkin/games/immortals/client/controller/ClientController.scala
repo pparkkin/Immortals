@@ -2,9 +2,7 @@ package pparkkin.games.immortals.client.controller
 
 import akka.actor._
 import java.net.InetSocketAddress
-import util.{Success, Failure}
 import pparkkin.games.immortals.client.ui.ServerSelectorFrame
-import pparkkin.games.immortals.tcp.TCPConnection
 
 case class Exit()
 case class SelectServer()
