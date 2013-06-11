@@ -15,7 +15,7 @@ class TCPClient(address: InetSocketAddress, dataProcessor: ActorRef) extends Act
     case Connected(h, _) =>
       log.info("Connected to server.")
       context.become(connected(h))
-      h.write(ByteString("J:Paavo"))
+      h.write(ByteString("JPaavo"))
   }
 
   def connected(handle: SocketHandle): Receive = {
@@ -29,4 +29,10 @@ object TCPClient {
 //    val dp = TCPConnection.newInstance(system, controller)
 //    system.actorOf(Props(new TCPClient(address, dp)), "TCPClient")
 //  }
+}
+
+object TCPClientFactory extends TCPActorFactory {
+  def newActor(factory: ActorRefFactory, address: InetSocketAddress, dataProcessor: ActorRef): ActorRef = {
+    factory.actorOf(Props(new TCPClient(address, dataProcessor)), "TCPClient")
+  }
 }

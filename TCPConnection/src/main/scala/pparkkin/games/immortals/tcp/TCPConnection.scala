@@ -11,7 +11,9 @@ case class End()
 case class Process(bytes: ByteString)
 case class Send(data: String)
 
-class TCPConnection(controller: ActorRef) extends Actor with ActorLogging {
+class TCPConnection(controller: ActorRef, connectionFactory: TCPActorFactory, address: InetSocketAddress) extends Actor with ActorLogging {
+  val connection = connectionFactory.newActor(context, address, self)
+
   def receive = {
     case Process(bytes) =>
       controller ! End
@@ -20,16 +22,15 @@ class TCPConnection(controller: ActorRef) extends Actor with ActorLogging {
 
 object TCPConnection {
   def newServer(factory: ActorRefFactory, address: InetSocketAddress, controller: ActorRef): ActorRef = {
-    val dp = newInstance(factory, controller)
-    factory.actorOf(Props(new TCPServer(address, dp)), "TCPServer")
+    newInstance(factory, controller, TCPServerFactory, address)
   }
 
   def newClient(factory: ActorRefFactory, address: InetSocketAddress, controller: ActorRef): ActorRef = {
-    val dp = newInstance(factory, controller)
-    factory.actorOf(Props(new TCPClient(address, dp)), "TCPClient")
+    newInstance(factory, controller, TCPClientFactory, address)
   }
 
-  def newInstance(system: ActorRefFactory, controller: ActorRef): ActorRef = {
-    system.actorOf(Props(new TCPConnection(controller)), "TCPConnection")
+  def newInstance(system: ActorRefFactory, controller: ActorRef,
+                  connectionFactory: TCPActorFactory, address: InetSocketAddress): ActorRef = {
+    system.actorOf(Props(new TCPConnection(controller, connectionFactory, address)), "TCPConnection")
   }
 }

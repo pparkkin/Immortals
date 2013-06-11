@@ -24,3 +24,9 @@ object TCPServer {
 //    system.actorOf(Props(new TCPServer(address, dp)), "TCPServer")
 //  }
 }
+
+object TCPServerFactory extends TCPActorFactory {
+  def newActor(factory: ActorRefFactory, address: InetSocketAddress, dataProcessor: ActorRef): ActorRef = {
+    factory.actorOf(Props(new TCPServer(address, dataProcessor)), "TCPServer")
+  }
+}
