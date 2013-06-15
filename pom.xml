@@ -113,6 +113,7 @@
     <module>ImmortalsServer</module>
     <module>ImmortalsClient</module>
     <module>TCPConnection</module>
+    <module>Protocols</module>
   </modules>
   <build>
   	<pluginManagement>
