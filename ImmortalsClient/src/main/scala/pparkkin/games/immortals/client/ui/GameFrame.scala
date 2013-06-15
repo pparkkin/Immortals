@@ -1,33 +1,36 @@
 package pparkkin.games.immortals.client.ui
 
 import swing.{Label, Frame}
-import akka.actor.ActorRef
+import akka.actor._
 import javax.swing.SwingUtilities
 import swing.event.{WindowClosing}
 import pparkkin.games.immortals.client.controller.Quit
+import pparkkin.games.immortals.client.controller.Quit
+import scala.swing.event.WindowClosing
 
-class GameFrame(controller: ActorRef) extends Frame {
-  title = "Game"
-  contents = new Label {
-    text = "This is the game."
+class GameFrame(controller: ActorRef) extends Actor with ActorLogging {
+  val frame = new Frame {
+    title = "Game"
+    contents = new Label {
+      text = "This is the game."
+    }
+
+    listenTo(this)
+    reactions += {
+      case WindowClosing(w) =>
+        this.dispose()
+        controller ! Quit
+    }
   }
+  frame.visible = true
 
-  listenTo(this)
-  reactions += {
-    case WindowClosing(w) =>
-      this.dispose()
-      controller ! Quit
+  def receive = {
+    case _ => {}
   }
-
 }
 
 object GameFrame {
-  def open(controller: ActorRef) = {
-    SwingUtilities.invokeLater(new Runnable {
-      def run {
-        val frame = new GameFrame(controller)
-        frame.visible = true
-      }
-    })
+  def open(factory: ActorRefFactory, controller: ActorRef): ActorRef = {
+    factory.actorOf(Props(new GameFrame(controller)), "GameFrame")
   }
 }

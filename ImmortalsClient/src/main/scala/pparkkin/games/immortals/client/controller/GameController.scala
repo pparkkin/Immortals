@@ -8,8 +8,8 @@ import java.net.InetSocketAddress
 case class Quit()
 
 class GameController(address: InetSocketAddress) extends Actor with ActorLogging {
-  GameFrame.open(self)
-  TCPConnection.newClient(context, address, self)
+  val frame = GameFrame.open(context, self)
+  val server = TCPConnection.newClient(context, address, self)
 
   def receive = {
     case Quit => System.exit(0)
