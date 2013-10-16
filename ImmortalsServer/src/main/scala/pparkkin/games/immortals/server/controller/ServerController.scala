@@ -3,10 +3,8 @@ package pparkkin.games.immortals.server.controller
 import akka.actor._
 import java.net.InetSocketAddress
 import pparkkin.games.immortals.server.game.{Start, ImmortalsGame}
-import pparkkin.games.immortals.tcp.{TCPConnection, End}
-
-case class Listen(address: InetSocketAddress)
-case class Exit()
+import pparkkin.games.immortals.tcp.TCPConnection
+import pparkkin.games.immortals.messages.{Welcome, Join}
 
 class ServerController(address: InetSocketAddress) extends Actor with ActorLogging {
   val game = ImmortalsGame.newInstance(context, self)
@@ -14,10 +12,10 @@ class ServerController(address: InetSocketAddress) extends Actor with ActorLoggi
   game ! Start
 
   def receive = {
-    case End =>
-      System.exit(0)
-    case Exit =>
-      System.exit(0)
+    case j: Join =>
+      game ! j
+    case w: Welcome =>
+      listener ! w
   }
 
 }

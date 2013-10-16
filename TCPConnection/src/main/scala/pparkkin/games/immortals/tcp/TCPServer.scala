@@ -2,6 +2,8 @@ package pparkkin.games.immortals.tcp
 
 import akka.actor._
 import java.net.InetSocketAddress
+import scala.collection.mutable
+import akka.actor.IO.SocketHandle
 
 class TCPServer(address: InetSocketAddress, dataProcessor: ActorRef) extends Actor with ActorLogging {
 
@@ -9,12 +11,29 @@ class TCPServer(address: InetSocketAddress, dataProcessor: ActorRef) extends Act
     IOManager(context.system) listen address
   }
 
+  var idCount = 0
+
+  val id2socket = mutable.Map[Int, SocketHandle]()
+  val socket2id = mutable.Map[SocketHandle, Int]()
+
   def receive = {
     case IO.NewClient(server) =>
       log.info("New client.")
-      server.accept()
+      val socket = server.accept()
+      val id = idCount ; idCount += 1
+      id2socket.put(id, socket)
+      socket2id.put(socket, id)
     case IO.Read(socket, bytes) =>
-      dataProcessor ! Process(bytes)
+      socket2id.get(socket.asSocket)
+        .map(dataProcessor ! Process(_, bytes))
+        .getOrElse(log.warning("Read from unknown socket."))
+    case Send(id, bytes) =>
+      log.info(s"Sending $bytes to socket id $id.")
+      id2socket.get(id)
+        .map(_.write(bytes))
+        .getOrElse(log.warning(s"Could not find socket for id $id."))
+    case m =>
+      log.info(s"Unknown message $m")
   }
 }
 

@@ -1,19 +1,20 @@
 package pparkkin.games.immortals.server.game
 
 import akka.actor._
-import pparkkin.games.immortals.tcp.End
-import pparkkin.games.immortals.server.controller.Exit
+import pparkkin.games.immortals.messages.{Welcome, Join}
 
 case class Start()
+case class End()
 
 class ImmortalsGame(controller: ActorRef) extends Actor with ActorLogging {
   def receive = {
     case Start =>
-      log.info("Game start.")
-      //self ! End
+      log.debug("Game start.")
+    case Join(player) =>
+      log.debug(s"New player $player joined.")
+      sender ! Welcome(player, "Hoshino Game")
     case End =>
-      log.info("Game end.")
-      controller ! Exit
+      log.debug("Game end.")
   }
 }
 

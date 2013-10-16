@@ -1,9 +1,10 @@
 package pparkkin.games.immortals.client.controller
 
 import akka.actor._
-import pparkkin.games.immortals.client.ui.GameFrame
-import pparkkin.games.immortals.tcp.TCPConnection
+import pparkkin.games.immortals.client.ui.{Joined, GameFrame}
+import pparkkin.games.immortals.tcp.{ConnectionReady, TCPConnection}
 import java.net.InetSocketAddress
+import pparkkin.games.immortals.messages.{Welcome, Join}
 
 case class Quit()
 
@@ -12,7 +13,12 @@ class GameController(address: InetSocketAddress) extends Actor with ActorLogging
   val server = TCPConnection.newClient(context, address, self)
 
   def receive = {
-    case Quit => System.exit(0)
+    case ConnectionReady =>
+      log.debug("Connection ready.")
+      server ! Join("Paavo")
+    case Welcome(player, game) =>
+      log.debug(s"Welcome received from $game for $player.")
+      frame ! Joined(game)
   }
 }
 

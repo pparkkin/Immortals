@@ -54,6 +54,11 @@
           <artifactId>TCPConnection</artifactId>
           <version>1.0-SNAPSHOT</version>
       </dependency>
+      <dependency>
+          <groupId>pparkkin.games.immortals</groupId>
+          <artifactId>Protocols</artifactId>
+          <version>1.0-SNAPSHOT</version>
+      </dependency>
 
   </dependencies>
 
