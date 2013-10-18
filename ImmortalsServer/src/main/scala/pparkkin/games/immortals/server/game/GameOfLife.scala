@@ -10,7 +10,7 @@ object GameOfLife {
     for (row <- 0 until board.size) {
       for (col <- 0 until board(row).size) {
         val n = liveNeighbors(board, row, col)
-        if (board(row)(col)) {
+        if (isLive(board, row, col)) {
           if (1 < n && n < 4) res(row)(col) = true
           else res(row)(col) = false
         } else {
@@ -24,18 +24,20 @@ object GameOfLife {
   }
 
   def liveNeighbors(board: Array[Array[Boolean]], row: Int, col: Int): Int = {
+    Array((-1, -1), (-1, 0), (-1, +1),
+          (0,  -1),          (0,  +1),
+          (+1, -1), (+1, 0), (+1, +1))
+      .map((rc) => isLive(board, row+rc._1, col+rc._2))
+      .count((p) => p)
+  }
+
+  def isLive(board: Array[Array[Boolean]], row: Int, col: Int): Boolean = {
     val maxRow = board.size-1
-    val maxCol = board(row).size-1
+    val maxCol = board(0).size-1
 
-    val n  = if (row <= 0) false else board(row-1)(col)
-    val ne = if (row <= 0) false else (if (col >= maxCol) false else board(row-1)(col+1))
-    val e  = if (col >= maxCol) false else board(row)(col+1)
-    val se = if (row >= maxRow) false else (if (col >= maxCol) false else board(row+1)(col+1))
-    val s  = if (row >= maxRow) false else board(row+1)(col)
-    val sw = if (row >= maxRow) false else (if (col <= 0) false else board(row+1)(col-1))
-    val w  = if (col <= 0) false else board(row)(col-1)
-    val nw = if (row <= 0) false else (if (col <= 0) false else board(row-1)(col-1))
+    if (row < 0 || row > maxRow) return false
+    if (col < 0 || col > maxCol) return false
 
-    Array(n, ne, e, se, s, sw, w, nw).count((p) => p)
+    board(row)(col)
   }
 }
