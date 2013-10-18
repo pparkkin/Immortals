@@ -1,6 +1,18 @@
 package pparkkin.games.immortals.server.game
 
+import scala.util.Random
+
 object GameOfLife {
+  def randomBoard(height: Int, width: Int, fill: Double = 0.3): Array[Array[Boolean]] = {
+    val res = Array.ofDim[Boolean](height, width)
+    for (row <- 0 until height) {
+      for (col <- 0 until width) {
+        res(row)(col) = if (Random.nextDouble() < fill) true else false
+      }
+    }
+    res
+  }
+
   def tick(board: Array[Array[Boolean]]): Array[Array[Boolean]] = {
     val height = board.size
     val width = board(0).size
@@ -11,11 +23,9 @@ object GameOfLife {
       for (col <- 0 until board(row).size) {
         val n = liveNeighbors(board, row, col)
         if (isLive(board, row, col)) {
-          if (1 < n && n < 4) res(row)(col) = true
-          else res(row)(col) = false
+          res(row)(col) = if (1 < n && n < 4) true else false
         } else {
-          if (n == 3) res(row)(col) = true
-          else res(row)(col) = false
+          res(row)(col) = if (n == 3) true else false
         }
       }
     }
