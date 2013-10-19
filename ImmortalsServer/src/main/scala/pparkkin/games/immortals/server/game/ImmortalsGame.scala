@@ -11,7 +11,7 @@ case class End()
 case class Tick()
 
 class ImmortalsGame(controller: ActorRef) extends Actor with ActorLogging {
-  val board = GameOfLife.randomBoard(20, 20)
+  private var board = GameOfLife.randomBoard(20, 20)
   private var tick: Option[Cancellable] = None
 
   def receive = {
@@ -28,6 +28,7 @@ class ImmortalsGame(controller: ActorRef) extends Actor with ActorLogging {
       log.debug("Game end.")
     case Tick =>
       log.debug("Tick.")
+      board = GameOfLife.tick(board)
   }
 }
 
