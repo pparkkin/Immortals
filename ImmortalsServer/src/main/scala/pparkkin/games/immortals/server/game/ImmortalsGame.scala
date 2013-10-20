@@ -4,7 +4,7 @@ import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
 import ExecutionContext.Implicits.global
 import akka.actor._
-import pparkkin.games.immortals.messages.{Welcome, Join}
+import pparkkin.games.immortals.messages.{Update, Welcome, Join}
 
 case class Start()
 case class End()
@@ -29,6 +29,7 @@ class ImmortalsGame(controller: ActorRef) extends Actor with ActorLogging {
     case Tick =>
       log.debug("Tick.")
       board = GameOfLife.tick(board)
+      controller ! Update(board)
   }
 }
 

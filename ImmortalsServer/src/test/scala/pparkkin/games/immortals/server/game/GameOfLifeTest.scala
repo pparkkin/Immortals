@@ -10,6 +10,9 @@ class GameOfLifeTest extends FunSuite {
                     Array(false, true,  true),
                     Array(false, true,  false))
 
+  // oxo
+  // xxx
+  // oxx
   val boardAfter = Array(Array(false, true, false),
                          Array(true,  true, true),
                          Array(false, true, true))

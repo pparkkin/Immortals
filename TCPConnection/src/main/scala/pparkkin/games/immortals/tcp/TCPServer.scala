@@ -29,9 +29,14 @@ class TCPServer(address: InetSocketAddress, dataProcessor: ActorRef) extends Act
         .getOrElse(log.warning("Read from unknown socket."))
     case Send(id, bytes) =>
       log.info(s"Sending $bytes to socket id $id.")
-      id2socket.get(id)
-        .map(_.write(bytes))
-        .getOrElse(log.warning(s"Could not find socket for id $id."))
+      id match {
+        case TCPClient.UNDEFINED_CONN_ID =>
+          id2socket.map((e) => e._2.write(bytes))
+        case i =>
+          id2socket.get(i)
+            .map(_.write(bytes))
+            .getOrElse(log.warning(s"Could not find socket for id $i."))
+      }
     case m =>
       log.info(s"Unknown message $m")
   }
