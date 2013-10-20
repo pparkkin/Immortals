@@ -30,4 +30,12 @@ class GameOfLifeTest extends FunSuite {
     val res = GameOfLife.tick(board)
     assert(res.deep == boardAfter.deep)
   }
+
+  test("Random board") {
+    val height = 20
+    val width = 20
+    val board = GameOfLife.randomBoard(height, width)
+    assert(board.size == height)
+    assert(board(0).size == width)
+  }
 }
