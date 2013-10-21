@@ -1,10 +1,7 @@
 package pparkkin.games.immortals.client.ui
 
-import swing.{Label, Frame}
+import swing.Frame
 import akka.actor._
-import javax.swing.SwingUtilities
-import swing.event.{WindowClosing}
-import pparkkin.games.immortals.client.controller.Quit
 import pparkkin.games.immortals.client.controller.Quit
 import scala.swing.event.WindowClosing
 
@@ -12,11 +9,10 @@ case class Joined(game: String)
 case class Display(board: Array[Array[Boolean]])
 
 class GameFrame(controller: ActorRef) extends Actor with ActorLogging {
+  val panel = new BoardPanel
   val frame = new Frame {
     title = "Game"
-    contents = new Label {
-      text = "This is the game."
-    }
+    contents = panel
 
     listenTo(this)
     reactions += {
@@ -27,11 +23,13 @@ class GameFrame(controller: ActorRef) extends Actor with ActorLogging {
   }
   frame.visible = true
 
+  var board: Option[Array[Array[Boolean]]] = None
+
   def receive = {
     case Joined(game) =>
       frame.title = game
     case Display(board) =>
-      frame.contents = new Label(board.toString)
+      panel.updateBoard(board)
   }
 }
 
