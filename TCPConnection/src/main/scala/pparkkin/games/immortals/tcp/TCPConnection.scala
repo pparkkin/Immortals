@@ -37,6 +37,7 @@ class TCPConnection(controller: ActorRef, connectionFactory: TCPActorFactory, ad
             .getOrElse(log.warning(s"Could not find player id $id."))
         case 0x55 =>
           log.info("Received update.")
+          controller ! Update(TCPConnection.deserializeBoard(bytes.drop(1)))
         case t =>
           log.info(s"Unknown message type $t.")
       }

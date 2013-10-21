@@ -9,6 +9,7 @@ import pparkkin.games.immortals.client.controller.Quit
 import scala.swing.event.WindowClosing
 
 case class Joined(game: String)
+case class Display(board: Array[Array[Boolean]])
 
 class GameFrame(controller: ActorRef) extends Actor with ActorLogging {
   val frame = new Frame {
@@ -29,6 +30,8 @@ class GameFrame(controller: ActorRef) extends Actor with ActorLogging {
   def receive = {
     case Joined(game) =>
       frame.title = game
+    case Display(board) =>
+      frame.contents = new Label(board.toString)
   }
 }
 
