@@ -23,8 +23,6 @@ class GameFrame(controller: ActorRef) extends Actor with ActorLogging {
   }
   frame.visible = true
 
-  var board: Option[Array[Array[Boolean]]] = None
-
   def receive = {
     case Joined(game) =>
       frame.title = game
