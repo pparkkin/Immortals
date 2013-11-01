@@ -76,6 +76,9 @@
                   <launcher>
                       <id>ImmortalsServer.main</id>
                       <mainClass>pparkkin.games.immortals.server.ImmortalsServer</mainClass>
+					  <args>
+							  <arg>Hoshino Game 2</arg>
+					  </args>
                   </launcher>
               </launchers>
               <args>

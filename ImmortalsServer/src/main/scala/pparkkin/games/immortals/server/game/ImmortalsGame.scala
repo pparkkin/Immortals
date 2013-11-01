@@ -10,7 +10,7 @@ case class Start()
 case class End()
 case class Tick()
 
-class ImmortalsGame(controller: ActorRef) extends Actor with ActorLogging {
+class ImmortalsGame(controller: ActorRef, name: String) extends Actor with ActorLogging {
   private var board = GameOfLife.randomBoard(20, 20)
   private var tick: Option[Cancellable] = None
 
@@ -21,7 +21,7 @@ class ImmortalsGame(controller: ActorRef) extends Actor with ActorLogging {
         500.milliseconds, self, Tick))
     case Join(player) =>
       log.debug(s"New player $player joined.")
-      sender ! Welcome(player, "Hoshino Game")
+      sender ! Welcome(player, name)
     case End =>
       tick.map(_.cancel())
         .getOrElse(log.warning("No tick when stopping game."))
@@ -34,8 +34,8 @@ class ImmortalsGame(controller: ActorRef) extends Actor with ActorLogging {
 }
 
 object ImmortalsGame {
-  def newInstance(system: ActorRefFactory, controller: ActorRef): ActorRef = {
-    system.actorOf(Props(new ImmortalsGame(controller)), "Game")
+  def newInstance(system: ActorRefFactory, controller: ActorRef, name: String): ActorRef = {
+    system.actorOf(Props(new ImmortalsGame(controller, name)), "Game")
   }
 
 }

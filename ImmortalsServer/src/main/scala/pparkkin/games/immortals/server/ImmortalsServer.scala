@@ -5,6 +5,9 @@ import controller.ServerController
 import java.net.InetSocketAddress
 
 object ImmortalsServer extends App {
-  val system = ActorSystem("ImmortalsServer")
-  var controller = ServerController.newInstance(system, new InetSocketAddress("localhost", 1204))
+  args.length match {
+    case 1 =>
+      val system = ActorSystem("ImmortalsServer")
+      ServerController.newInstance(system, new InetSocketAddress("localhost", 1204), args(0))
+  }
 }

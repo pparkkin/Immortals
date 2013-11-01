@@ -6,8 +6,8 @@ import pparkkin.games.immortals.server.game.{Start, ImmortalsGame}
 import pparkkin.games.immortals.tcp.TCPConnection
 import pparkkin.games.immortals.messages.{Update, Welcome, Join}
 
-class ServerController(address: InetSocketAddress) extends Actor with ActorLogging {
-  val game = ImmortalsGame.newInstance(context, self)
+class ServerController(address: InetSocketAddress, name: String) extends Actor with ActorLogging {
+  val game = ImmortalsGame.newInstance(context, self, name)
   val listener = TCPConnection.newServer(context, address, self)
   game ! Start
 
@@ -23,7 +23,7 @@ class ServerController(address: InetSocketAddress) extends Actor with ActorLoggi
 }
 
 object ServerController {
-  def newInstance(system: ActorRefFactory, address: InetSocketAddress): ActorRef = {
-    system.actorOf(Props(new ServerController(address)), "ServerController")
+  def newInstance(system: ActorRefFactory, address: InetSocketAddress, name: String): ActorRef = {
+    system.actorOf(Props(new ServerController(address, name)), "ServerController")
   }
 }
