@@ -6,7 +6,7 @@ import pparkkin.games.immortals.client.ui.ServerSelectorFrame
 
 case class Exit()
 case class SelectServer()
-case class ConnectServer(server: String)
+case class ConnectServer(server: String, player: String)
 
 class ClientController() extends Actor with ActorLogging {
   def receive = {
@@ -14,10 +14,10 @@ class ClientController() extends Actor with ActorLogging {
       System.exit(0)
     case SelectServer =>
       ServerSelectorFrame.open(self)
-    case ConnectServer(server) =>
+    case ConnectServer(server, player) =>
       val addr = new InetSocketAddress(server, 1204)
       log.info("Connecting to "+addr.toString)
-      GameController.newInstance(context, addr)
+      GameController.newInstance(context, addr, player)
   }
 }
 

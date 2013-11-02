@@ -8,14 +8,14 @@ import pparkkin.games.immortals.messages.{Update, Welcome, Join}
 
 case class Quit()
 
-class GameController(address: InetSocketAddress) extends Actor with ActorLogging {
+class GameController(address: InetSocketAddress, player: String) extends Actor with ActorLogging {
   val frame = GameFrame.open(context, self)
   val server = TCPConnection.newClient(context, address, self)
 
   def receive = {
     case ConnectionReady =>
       log.debug("Connection ready.")
-      server ! Join("Paavo")
+      server ! Join(player)
     case Welcome(player, game) =>
       log.debug(s"Welcome received from $game for $player.")
       frame ! Joined(game)
@@ -28,7 +28,7 @@ class GameController(address: InetSocketAddress) extends Actor with ActorLogging
 }
 
 object GameController {
-  def newInstance(factory: ActorRefFactory, address: InetSocketAddress): ActorRef = {
-    factory.actorOf(Props(new GameController(address)), "GameController")
+  def newInstance(factory: ActorRefFactory, address: InetSocketAddress, player: String): ActorRef = {
+    factory.actorOf(Props(new GameController(address, player)), "GameController")
   }
 }
