@@ -36,12 +36,11 @@ class TCPConnection(controller: ActorRef, connectionFactory: TCPActorFactory, ad
             .map(controller ! Welcome(_, bytes.drop(1).decodeString("UTF-8")))
             .getOrElse(log.warning(s"Could not find player id $id."))
         case 0x55 =>
-          log.info("Received update.")
+          log.debug("Received update.")
           controller ! Update(TCPConnection.deserializeBoard(bytes.drop(1)))
         case t =>
           log.info(s"Unknown message type $t.")
       }
-      controller ! End
     case Join(player) =>
       log.debug(s"Received join from $player.")
       connection ! Send(TCPClient.UNDEFINED_CONN_ID, ByteString("J"+player))
@@ -57,7 +56,7 @@ class TCPConnection(controller: ActorRef, connectionFactory: TCPActorFactory, ad
       connection ! Send(TCPClient.UNDEFINED_CONN_ID,
         ByteString("U") ++ TCPConnection.serializeBoard(board))
     case m =>
-      log.info(s"Unknown message $m.")
+      log.warning(s"Unknown message $m.")
   }
 }
 

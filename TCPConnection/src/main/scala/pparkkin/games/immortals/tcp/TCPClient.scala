@@ -19,7 +19,7 @@ class TCPClient(address: InetSocketAddress, dataProcessor: ActorRef) extends Act
 
   def connected(handle: SocketHandle): Receive = {
     case IO.Read(_, bytes) =>
-      log.info(s"Read $bytes from socket.")
+      log.debug(s"Read $bytes from socket.")
       dataProcessor ! Process(TCPClient.UNDEFINED_CONN_ID, bytes)
     case Send(_, s) =>
       log.debug(s"Sending $s")

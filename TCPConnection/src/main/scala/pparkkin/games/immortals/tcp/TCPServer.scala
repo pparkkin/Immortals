@@ -18,7 +18,7 @@ class TCPServer(address: InetSocketAddress, dataProcessor: ActorRef) extends Act
 
   def receive = {
     case IO.NewClient(server) =>
-      log.info("New client.")
+      log.debug("New client.")
       val socket = server.accept()
       val id = idCount ; idCount += 1
       id2socket.put(id, socket)
@@ -28,7 +28,7 @@ class TCPServer(address: InetSocketAddress, dataProcessor: ActorRef) extends Act
         .map(dataProcessor ! Process(_, bytes))
         .getOrElse(log.warning("Read from unknown socket."))
     case Send(id, bytes) =>
-      log.info(s"Sending $bytes to socket id $id.")
+      log.debug(s"Sending $bytes to socket id $id.")
       id match {
         case TCPClient.UNDEFINED_CONN_ID =>
           id2socket.map((e) => e._2.write(bytes))
@@ -38,7 +38,7 @@ class TCPServer(address: InetSocketAddress, dataProcessor: ActorRef) extends Act
             .getOrElse(log.warning(s"Could not find socket for id $i."))
       }
     case m =>
-      log.info(s"Unknown message $m")
+      log.warning(s"Unknown message $m")
   }
 }
 
