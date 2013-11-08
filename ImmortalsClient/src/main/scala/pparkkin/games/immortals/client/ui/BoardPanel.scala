@@ -13,6 +13,7 @@ class BoardPanel extends Panel {
   def updateBoard(board: Array[Array[Boolean]]) {
     this.board = Some(board)
     this.repaint()
+
   }
 
   override
@@ -32,13 +33,13 @@ class BoardPanel extends Panel {
 
   def drawSquare(i: Int, j: Int, alive: Boolean, g: Graphics2D) {
     g.setColor(Color.GRAY)
-    g.drawRect(j*SQUARE_W, i*SQUARE_H, SQUARE_W+1, SQUARE_H+1)
+    g.drawRect(j*SQUARE_W, i*SQUARE_H, SQUARE_W, SQUARE_H)
 
     alive match {
       case true => g.setColor(Color.BLACK)
       case false => g.setColor(Color.WHITE)
     }
-    g.fillRect((j*SQUARE_W)+1, (i*SQUARE_H)+1, SQUARE_W, SQUARE_H)
+    g.fillRect((j*SQUARE_W)+1, (i*SQUARE_H)+1, SQUARE_W-1, SQUARE_H-1)
   }
 
 }
