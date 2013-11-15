@@ -4,21 +4,18 @@ import scala.swing.{Graphics2D, Panel}
 import java.awt.Color
 import javax.swing.BorderFactory
 
-class BoardPanel extends Panel {
+class BoardPanel(var board: Array[Array[Boolean]]) extends Panel {
   val SQUARE_W = 12
   val SQUARE_H = 12
 
-  private var board: Option[Array[Array[Boolean]]] = None
-
   def updateBoard(board: Array[Array[Boolean]]) {
-    this.board = Some(board)
+    this.board = board
     this.repaint()
-
   }
 
   override
   def paintComponent(g: Graphics2D) {
-    board.map(drawBoard(_, g))
+    drawBoard(board, g)
   }
 
   def drawBoard(board: Array[Array[Boolean]], g: Graphics2D) {

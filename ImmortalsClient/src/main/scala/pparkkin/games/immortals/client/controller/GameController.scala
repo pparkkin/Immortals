@@ -1,7 +1,7 @@
 package pparkkin.games.immortals.client.controller
 
 import akka.actor._
-import pparkkin.games.immortals.client.ui.{Display, Joined, GameFrame}
+import pparkkin.games.immortals.client.ui.{DisplayBoard, GameFrame}
 import pparkkin.games.immortals.tcp.{ConnectionReady, TCPConnection}
 import java.net.InetSocketAddress
 import pparkkin.games.immortals.messages.{Update, Welcome, Join}
@@ -9,7 +9,7 @@ import pparkkin.games.immortals.messages.{Update, Welcome, Join}
 case class Quit()
 
 class GameController(address: InetSocketAddress, player: String) extends Actor with ActorLogging {
-  val frame = GameFrame.open(context, self)
+  var frame: Option[ActorRef] = None
   val server = TCPConnection.newClient(context, address, self)
 
   def receive = {
@@ -18,10 +18,11 @@ class GameController(address: InetSocketAddress, player: String) extends Actor w
       server ! Join(player)
     case Welcome(player, game) =>
       log.debug(s"Welcome received from $game for $player.")
-      frame ! Joined(game)
     case Update(board) =>
       log.debug("Received updated board.")
-      frame ! Display(board)
+      frame
+        .map(_ ! DisplayBoard(board))
+        .getOrElse(frame = Some(GameFrame.open(context, self, board)))
     case m =>
       log.info(s"Unknown message $m.")
   }

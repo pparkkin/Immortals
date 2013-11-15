@@ -5,11 +5,10 @@ import akka.actor._
 import pparkkin.games.immortals.client.controller.Quit
 import scala.swing.event.WindowClosing
 
-case class Joined(game: String)
-case class Display(board: Array[Array[Boolean]])
+case class DisplayBoard(board: Array[Array[Boolean]])
 
-class GameFrame(controller: ActorRef) extends Actor with ActorLogging {
-  val panel = new BoardPanel
+class GameFrame(controller: ActorRef, board: Array[Array[Boolean]]) extends Actor with ActorLogging {
+  val panel = new BoardPanel(board)
   val frame = new Frame {
     title = "Game"
     contents = panel
@@ -24,15 +23,13 @@ class GameFrame(controller: ActorRef) extends Actor with ActorLogging {
   frame.visible = true
 
   def receive = {
-    case Joined(game) =>
-      frame.title = game
-    case Display(board) =>
+    case DisplayBoard(board) =>
       panel.updateBoard(board)
   }
 }
 
 object GameFrame {
-  def open(factory: ActorRefFactory, controller: ActorRef): ActorRef = {
-    factory.actorOf(Props(new GameFrame(controller)), "GameFrame")
+  def open(factory: ActorRefFactory, controller: ActorRef, board: Array[Array[Boolean]]): ActorRef = {
+    factory.actorOf(Props(new GameFrame(controller, board)), "GameFrame")
   }
 }
