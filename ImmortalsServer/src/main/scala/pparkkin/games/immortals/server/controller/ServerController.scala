@@ -4,7 +4,7 @@ import akka.actor._
 import java.net.InetSocketAddress
 import pparkkin.games.immortals.server.game.{Start, ImmortalsGame}
 import pparkkin.games.immortals.tcp.TCPConnection
-import pparkkin.games.immortals.messages.{Update, Welcome, Join}
+import pparkkin.games.immortals.messages.{PlayerPositions, Update, Welcome, Join}
 
 class ServerController(address: InetSocketAddress, name: String) extends Actor with ActorLogging {
   val game = ImmortalsGame.newInstance(context, self, name)
@@ -18,6 +18,10 @@ class ServerController(address: InetSocketAddress, name: String) extends Actor w
       listener ! w
     case u: Update =>
       listener ! u
+    case pp: PlayerPositions =>
+      listener ! pp
+    case m =>
+      log.warning(s"Unknown message $m")
   }
 
 }
