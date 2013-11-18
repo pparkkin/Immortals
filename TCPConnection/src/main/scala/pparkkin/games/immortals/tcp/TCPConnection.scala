@@ -5,6 +5,8 @@ import akka.util.{ByteStringBuilder, ByteString}
 import java.net.InetSocketAddress
 import pparkkin.games.immortals.messages.{Update, Welcome, Join, End}
 import scala.collection.mutable
+import pparkkin.games.immortals.datatypes.Board
+import pparkkin.games.immortals.serializers.BoardSerializer
 
 // Control messages
 case class ConnectionReady()
@@ -37,7 +39,7 @@ class TCPConnection(controller: ActorRef, connectionFactory: TCPActorFactory, ad
             .getOrElse(log.warning(s"Could not find player id $id."))
         case 0x55 =>
           log.debug("Received update.")
-          controller ! Update(TCPConnection.deserializeBoard(bytes.drop(1)))
+          controller ! Update(BoardSerializer.deserialize(bytes.drop(1)))
         case t =>
           log.info(s"Unknown message type $t.")
       }
@@ -54,7 +56,7 @@ class TCPConnection(controller: ActorRef, connectionFactory: TCPActorFactory, ad
     case Update(board) =>
       log.debug("Received a board update.")
       connection ! Send(TCPClient.UNDEFINED_CONN_ID,
-        ByteString("U") ++ TCPConnection.serializeBoard(board))
+        ByteString("U") ++ BoardSerializer.serialize(board))
     case m =>
       log.warning(s"Unknown message $m.")
   }
@@ -74,30 +76,4 @@ object TCPConnection {
     system.actorOf(Props(new TCPConnection(controller, connectionFactory, address)), "TCPConnection")
   }
 
-  implicit val byteOrder = java.nio.ByteOrder.BIG_ENDIAN
-
-  def serializeBoard(board: Array[Array[Boolean]]): ByteString = {
-    val height = board.size
-    val width = board(0).size
-
-    val bb = new ByteStringBuilder()
-      .putInt(height)
-      .putInt(width)
-
-    board.map((row) => {
-      row.map((p) => bb.putByte(if (p) 1 else 0))
-    })
-
-    bb.result()
-  }
-
-  def deserializeBoard(bytes: ByteString): Array[Array[Boolean]] = {
-    val it = bytes.iterator
-    val height = it.getInt
-    val width = it.getInt
-
-    Array.tabulate[Boolean](height, width) ((row, col) => {
-      if (it.getByte == 1) true else false
-    })
-  }
 }

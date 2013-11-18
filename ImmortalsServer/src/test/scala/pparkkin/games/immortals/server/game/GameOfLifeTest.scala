@@ -1,21 +1,23 @@
 package pparkkin.games.immortals.server.game
 
+import scala.collection.immutable.IndexedSeq
 import org.scalatest.FunSuite
+import pparkkin.games.immortals.datatypes.Board
 
 class GameOfLifeTest extends FunSuite {
   // xoo
   // oxx
   // oxo
-  val board = Array(Array(true,  false, false),
-                    Array(false, true,  true),
-                    Array(false, true,  false))
+  val board = Board(IndexedSeq(IndexedSeq(true,  false, false),
+                               IndexedSeq(false, true,  true),
+                               IndexedSeq(false, true,  false)))
 
   // oxo
   // xxx
   // oxx
-  val boardAfter = Array(Array(false, true, false),
-                         Array(true,  true, true),
-                         Array(false, true, true))
+  val boardAfter = Board(IndexedSeq(IndexedSeq(false, true, false),
+                                    IndexedSeq(true,  true, true),
+                                    IndexedSeq(false, true, true)))
 
   test("Calculate neighbors") {
     assert(GameOfLife.liveNeighbors(board, 0, 0) == 1)
@@ -31,14 +33,14 @@ class GameOfLifeTest extends FunSuite {
 
   test("Tick") {
     val res = GameOfLife.tick(board)
-    assert(res.deep == boardAfter.deep)
+    assert(res == boardAfter)
   }
 
   test("Random board") {
     val height = 20
     val width = 20
     val board = GameOfLife.randomBoard(height, width)
-    assert(board.size == height)
-    assert(board(0).size == width)
+    assert(board.height == height)
+    assert(board.width == width)
   }
 }

@@ -4,10 +4,11 @@ import swing.Frame
 import akka.actor._
 import pparkkin.games.immortals.client.controller.Quit
 import scala.swing.event.WindowClosing
+import pparkkin.games.immortals.datatypes.Board
 
-case class DisplayBoard(board: Array[Array[Boolean]])
+case class DisplayBoard(board: Board)
 
-class GameFrame(controller: ActorRef, board: Array[Array[Boolean]]) extends Actor with ActorLogging {
+class GameFrame(controller: ActorRef, board: Board) extends Actor with ActorLogging {
   val panel = new BoardPanel(board)
   val frame = new Frame {
     title = "Game"
@@ -29,7 +30,7 @@ class GameFrame(controller: ActorRef, board: Array[Array[Boolean]]) extends Acto
 }
 
 object GameFrame {
-  def open(factory: ActorRefFactory, controller: ActorRef, board: Array[Array[Boolean]]): ActorRef = {
+  def open(factory: ActorRefFactory, controller: ActorRef, board: Board): ActorRef = {
     factory.actorOf(Props(new GameFrame(controller, board)), "GameFrame")
   }
 }

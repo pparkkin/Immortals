@@ -3,12 +3,13 @@ package pparkkin.games.immortals.client.ui
 import scala.swing.{Graphics2D, Panel}
 import java.awt.Color
 import javax.swing.BorderFactory
+import pparkkin.games.immortals.datatypes.Board
 
-class BoardPanel(var board: Array[Array[Boolean]]) extends Panel {
+class BoardPanel(var board: Board) extends Panel {
   val SQUARE_W = 12
   val SQUARE_H = 12
 
-  def updateBoard(board: Array[Array[Boolean]]) {
+  def updateBoard(board: Board) {
     this.board = board
     this.repaint()
   }
@@ -18,12 +19,12 @@ class BoardPanel(var board: Array[Array[Boolean]]) extends Panel {
     drawBoard(board, g)
   }
 
-  def drawBoard(board: Array[Array[Boolean]], g: Graphics2D) {
-    val height = board.size
-    val width = board(0).size
+  def drawBoard(board: Board, g: Graphics2D) {
+    val height = board.height
+    val width = board.width
     for (i <- 0 until height) {
       for (j <- 0 until width) {
-        drawSquare(i, j, board(i)(j), g)
+        drawSquare(i, j, board(i, j), g)
       }
     }
   }

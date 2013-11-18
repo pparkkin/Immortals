@@ -1,3 +1,5 @@
 package pparkkin.games.immortals.messages
 
-case class Update(board: Array[Array[Boolean]])
+import pparkkin.games.immortals.datatypes.Board
+
+case class Update(board: Board)
