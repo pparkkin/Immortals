@@ -83,16 +83,35 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.6</version>
         <configuration>
+		  <skipTests>true</skipTests>
+		  <!--
           <useFile>false</useFile>
           <disableXmlReport>true</disableXmlReport>
-          <!-- If you have classpath issue like NoDefClassError,... -->
-          <!-- useManifestOnlyJar>false</useManifestOnlyJar -->
           <includes>
             <include>**/*Test.*</include>
             <include>**/*Suite.*</include>
-          </includes>
+		  </includes>
+		  -->
         </configuration>
       </plugin>
+        <plugin>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest-maven-plugin</artifactId>
+            <version>1.0-RC2</version>
+            <configuration>
+                <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+                <junitxml>.</junitxml>
+                <filereports>WDF TestSuite.txt</filereports>
+            </configuration>
+            <executions>
+                <execution>
+                    <id>test</id>
+                    <goals>
+                        <goal>test</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
     </plugins>
   </build>
 </project>
