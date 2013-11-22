@@ -16,6 +16,9 @@ class Board private (val c: IndexedSeq[IndexedSeq[Boolean]]) {
     c(i)(j)
   }
 
+  def ==(other: Board) =
+    (this.c.equals(other.c))
+
   def iterate(f: (Boolean) => _) {
     c.map(_.map(f))
   }
