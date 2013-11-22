@@ -1,12 +1,14 @@
 package pparkkin.games.immortals.tcp
 
 import akka.actor._
-import akka.util.{ByteStringBuilder, ByteString}
+import akka.util.ByteString
 import java.net.InetSocketAddress
-import pparkkin.games.immortals.messages.{Update, Welcome, Join, End}
+import pparkkin.games.immortals.messages._
 import scala.collection.mutable
-import pparkkin.games.immortals.datatypes.Board
-import pparkkin.games.immortals.serializers.BoardSerializer
+import pparkkin.games.immortals.serializers.{PlayersSerializer, BoardSerializer}
+import pparkkin.games.immortals.messages.Welcome
+import pparkkin.games.immortals.messages.Update
+import pparkkin.games.immortals.messages.Join
 
 // Control messages
 case class ConnectionReady()
@@ -57,6 +59,10 @@ class TCPConnection(controller: ActorRef, connectionFactory: TCPActorFactory, ad
       log.debug("Received a board update.")
       connection ! Send(TCPClient.UNDEFINED_CONN_ID,
         ByteString("U") ++ BoardSerializer.serialize(board))
+    case PlayerPositions(pp) =>
+      log.debug("Received a player position update.")
+      connection ! Send(TCPClient.UNDEFINED_CONN_ID,
+        ByteString("P") ++ PlayersSerializer.serialize(pp))
     case m =>
       log.warning(s"Unknown message $m.")
   }
