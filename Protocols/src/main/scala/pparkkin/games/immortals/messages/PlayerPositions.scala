@@ -1,5 +1,5 @@
 package pparkkin.games.immortals.messages
 
-import scala.collection.immutable.Map
+import pparkkin.games.immortals.datatypes.Players
 
-case class PlayerPositions(players: Map[String, (Int, Int)])
+case class PlayerPositions(players: Players)

@@ -1,12 +1,12 @@
 package pparkkin.games.immortals.server.game
 
-import scala.collection.immutable.Map
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
 import ExecutionContext.Implicits.global
 import akka.actor._
 import pparkkin.games.immortals.messages.{PlayerPositions, Update, Welcome, Join}
 import scala.util.Random
+import pparkkin.games.immortals.datatypes.Players
 
 case class Start()
 case class End()
@@ -17,7 +17,7 @@ class ImmortalsGame(controller: ActorRef, name: String) extends Actor with Actor
   val BOARD_HEIGHT = 20
   private var board = GameOfLife.randomBoard(BOARD_WIDTH, BOARD_HEIGHT)
   private var tick: Option[Cancellable] = None
-  private var players = Map.empty[String, (Int, Int)]
+  private var players = Players.empty
 
   def receive = {
     case Start =>
