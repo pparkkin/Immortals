@@ -1,10 +1,10 @@
 package pparkkin.games.immortals.client.controller
 
 import akka.actor._
-import pparkkin.games.immortals.client.ui.{DisplayBoard, GameFrame}
+import pparkkin.games.immortals.client.ui.{DisplayPlayers, DisplayBoard, GameFrame}
 import pparkkin.games.immortals.tcp.{ConnectionReady, TCPConnection}
 import java.net.InetSocketAddress
-import pparkkin.games.immortals.messages.{Update, Welcome, Join}
+import pparkkin.games.immortals.messages.{PlayerPositions, Update, Welcome, Join}
 
 case class Quit()
 
@@ -23,6 +23,10 @@ class GameController(address: InetSocketAddress, player: String) extends Actor w
       frame
         .map(_ ! DisplayBoard(board))
         .getOrElse(frame = Some(GameFrame.open(context, self, board)))
+    case PlayerPositions(players) =>
+      log.debug("Received updated player positions.")
+      frame
+        .map(_ ! DisplayPlayers(players))
     case m =>
       log.info(s"Unknown message $m.")
   }

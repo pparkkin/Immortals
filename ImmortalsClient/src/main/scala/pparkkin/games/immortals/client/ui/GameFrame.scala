@@ -4,9 +4,10 @@ import swing.Frame
 import akka.actor._
 import pparkkin.games.immortals.client.controller.Quit
 import scala.swing.event.WindowClosing
-import pparkkin.games.immortals.datatypes.Board
+import pparkkin.games.immortals.datatypes.{Players, Board}
 
 case class DisplayBoard(board: Board)
+case class DisplayPlayers(players: Players)
 
 class GameFrame(controller: ActorRef, board: Board) extends Actor with ActorLogging {
   val panel = new BoardPanel(board)
@@ -26,6 +27,8 @@ class GameFrame(controller: ActorRef, board: Board) extends Actor with ActorLogg
   def receive = {
     case DisplayBoard(board) =>
       panel.updateBoard(board)
+    case DisplayPlayers(players) =>
+      panel.updatePlayers(players)
   }
 }
 
