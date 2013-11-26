@@ -42,6 +42,9 @@ class TCPConnection(controller: ActorRef, connectionFactory: TCPActorFactory, ad
         case 0x55 =>
           log.debug("Received update.")
           controller ! Update(BoardSerializer.deserialize(bytes.drop(1)))
+        case 0x50 =>
+          log.debug("Received player positions.")
+          controller ! PlayerPositions(PlayersSerializer.deserialize(bytes.drop(1)))
         case t =>
           log.info(s"Unknown message type $t.")
       }
