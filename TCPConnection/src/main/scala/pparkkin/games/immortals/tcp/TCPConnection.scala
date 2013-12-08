@@ -5,7 +5,7 @@ import akka.util.ByteString
 import java.net.InetSocketAddress
 import pparkkin.games.immortals.messages._
 import scala.collection.mutable
-import pparkkin.games.immortals.serializers.{PlayersSerializer, BoardSerializer}
+import pparkkin.games.immortals.serializers.{WelcomeSerializer, PlayersSerializer, BoardSerializer}
 import pparkkin.games.immortals.messages.Welcome
 import pparkkin.games.immortals.messages.Update
 import pparkkin.games.immortals.messages.Join
@@ -37,7 +37,7 @@ class TCPConnection(controller: ActorRef, connectionFactory: TCPActorFactory, ad
           controller ! Join(player)
         case 0x57 =>
           id2player.get(id)
-            .map(controller ! Welcome(_, bytes.drop(1).decodeString("UTF-8")))
+            .map((p) => controller ! WelcomeSerializer.deserialize(bytes.drop(1)))
             .getOrElse(log.warning(s"Could not find player id $id."))
         case 0x55 =>
           log.debug("Received update.")
@@ -53,11 +53,11 @@ class TCPConnection(controller: ActorRef, connectionFactory: TCPActorFactory, ad
       connection ! Send(TCPClient.UNDEFINED_CONN_ID, ByteString("J"+player))
       id2player.put(TCPClient.UNDEFINED_CONN_ID, player)
       player2id.put(player, TCPClient.UNDEFINED_CONN_ID)
-    case Welcome(player, game) =>
-      log.debug(s"Received welcome $game for $player.")
-      player2id.get(player)
-        .map(connection ! Send(_, ByteString("W"+game)))
-        .getOrElse(log.warning(s"Unknown player $player."))
+    case w: Welcome =>
+      log.debug(s"Received Welcome.")
+      player2id.get(w.player)
+        .map(connection ! Send(_, ByteString("W") ++ WelcomeSerializer.serialize(w)))
+        .getOrElse(log.warning(s"Unknown player ${w.player}."))
     case Update(board) =>
       log.debug("Received a board update.")
       connection ! Send(TCPClient.UNDEFINED_CONN_ID,

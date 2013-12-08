@@ -16,17 +16,15 @@ class GameController(address: InetSocketAddress, player: String) extends Actor w
     case ConnectionReady =>
       log.debug("Connection ready.")
       server ! Join(player)
-    case Welcome(player, game) =>
+    case Welcome(player, game, board) =>
       log.debug(s"Welcome received from $game for $player.")
+      frame = Some(GameFrame.open(context, self, board))
     case Update(board) =>
       log.debug("Received updated board.")
-      frame
-        .map(_ ! DisplayBoard(board))
-        .getOrElse(frame = Some(GameFrame.open(context, self, board)))
+      frame.map(_ ! DisplayBoard(board))
     case PlayerPositions(players) =>
       log.debug("Received updated player positions.")
-      frame
-        .map(_ ! DisplayPlayers(players))
+      frame.map(_ ! DisplayPlayers(players))
     case m =>
       log.info(s"Unknown message $m.")
   }

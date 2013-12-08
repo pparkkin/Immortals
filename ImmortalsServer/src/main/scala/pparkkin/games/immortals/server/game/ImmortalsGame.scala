@@ -27,8 +27,7 @@ class ImmortalsGame(controller: ActorRef, name: String) extends Actor with Actor
     case Join(player) =>
       log.debug(s"New player $player joined.")
       players = players + (player -> randomPosition(BOARD_WIDTH, BOARD_HEIGHT))
-      sender ! Welcome(player, name)
-      sender ! Update(board)
+      sender ! Welcome(player, name, board)
       controller ! PlayerPositions(players)
     case End =>
       tick.map(_.cancel())
