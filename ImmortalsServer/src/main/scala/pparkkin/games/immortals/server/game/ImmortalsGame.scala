@@ -4,9 +4,14 @@ import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
 import ExecutionContext.Implicits.global
 import akka.actor._
-import pparkkin.games.immortals.messages.{PlayerPositions, Update, Welcome, Join}
+import pparkkin.games.immortals.messages._
 import scala.util.Random
 import pparkkin.games.immortals.datatypes.Players
+import pparkkin.games.immortals.messages.Welcome
+import pparkkin.games.immortals.messages.Update
+import pparkkin.games.immortals.messages.Join
+import pparkkin.games.immortals.messages.PlayerPositions
+import scala.Some
 
 case class Start()
 case class End()
@@ -26,8 +31,10 @@ class ImmortalsGame(controller: ActorRef, name: String) extends Actor with Actor
         500.milliseconds, self, Tick))
     case Join(player) =>
       log.debug(s"New player $player joined.")
-      players = players + (player -> randomPosition(BOARD_WIDTH, BOARD_HEIGHT))
       sender ! Welcome(player, name, board)
+    case WelcomeAck(player) =>
+      log.debug(s"Received welcome ack from $player.")
+      players = players + (player -> randomPosition(BOARD_WIDTH, BOARD_HEIGHT))
       controller ! PlayerPositions(players)
     case End =>
       tick.map(_.cancel())

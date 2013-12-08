@@ -39,6 +39,9 @@ class TCPConnection(controller: ActorRef, connectionFactory: TCPActorFactory, ad
           id2player.get(id)
             .map((p) => controller ! WelcomeSerializer.deserialize(bytes.drop(1)))
             .getOrElse(log.warning(s"Could not find player id $id."))
+        case 0x41 =>
+          val player = bytes.drop(1).decodeString("UTF-8")
+          player2id.get(player).map((i) => controller ! WelcomeAck(player))
         case 0x55 =>
           log.debug("Received update.")
           controller ! Update(BoardSerializer.deserialize(bytes.drop(1)))
@@ -58,6 +61,9 @@ class TCPConnection(controller: ActorRef, connectionFactory: TCPActorFactory, ad
       player2id.get(w.player)
         .map(connection ! Send(_, ByteString("W") ++ WelcomeSerializer.serialize(w)))
         .getOrElse(log.warning(s"Unknown player ${w.player}."))
+    case WelcomeAck(player) =>
+      log.debug("Received WelcomeAck.")
+      connection ! Send(TCPClient.UNDEFINED_CONN_ID, ByteString("A"+player))
     case Update(board) =>
       log.debug("Received a board update.")
       connection ! Send(TCPClient.UNDEFINED_CONN_ID,
