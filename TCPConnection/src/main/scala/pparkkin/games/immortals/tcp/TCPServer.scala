@@ -4,6 +4,7 @@ import akka.actor._
 import java.net.InetSocketAddress
 import scala.collection.mutable
 import akka.actor.IO.SocketHandle
+import akka.util.ByteString
 
 class TCPServer(address: InetSocketAddress, dataProcessor: ActorRef) extends Actor with ActorLogging {
 
@@ -37,6 +38,10 @@ class TCPServer(address: InetSocketAddress, dataProcessor: ActorRef) extends Act
             .map(_.write(bytes))
             .getOrElse(log.warning(s"Could not find socket for id $i."))
       }
+    case IO.Closed(socket, cause) =>
+      socket2id.get(socket.asSocket)
+        .map(dataProcessor ! Process(_, ByteString("Q")))
+        .getOrElse(log.warning("Unknown player closed socket."))
     case m =>
       log.warning(s"Unknown message $m")
   }
