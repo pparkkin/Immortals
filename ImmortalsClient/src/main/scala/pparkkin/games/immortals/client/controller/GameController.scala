@@ -1,8 +1,8 @@
 package pparkkin.games.immortals.client.controller
 
 import akka.actor._
-import pparkkin.games.immortals.client.ui.{DisplayPlayers, DisplayBoard, GameFrame}
-import pparkkin.games.immortals.tcp.{ConnectionReady, TCPConnection}
+import pparkkin.games.immortals.client.ui.GameFrame
+import pparkkin.games.immortals.client.tcp.TCPConnection
 import java.net.InetSocketAddress
 import pparkkin.games.immortals.messages._
 import pparkkin.games.immortals.messages.Welcome
@@ -11,7 +11,7 @@ import pparkkin.games.immortals.client.ui.DisplayBoard
 import pparkkin.games.immortals.messages.Join
 import pparkkin.games.immortals.messages.PlayerPositions
 import pparkkin.games.immortals.client.ui.DisplayPlayers
-import pparkkin.games.immortals.tcp.ConnectionReady
+import pparkkin.games.immortals.client.tcp.ConnectionReady
 import scala.Some
 
 case class Quit()

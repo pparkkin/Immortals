@@ -1,4 +1,4 @@
-package pparkkin.games.immortals.tcp
+package pparkkin.games.immortals.client.tcp
 
 import akka.actor._
 import akka.util.ByteString
@@ -15,10 +15,11 @@ case class ConnectionReady()
 
 // Messages to/from network
 case class Process(id: Int, bytes: ByteString)
+
 case class Send(id: Int, bytes: ByteString)
 
-class TCPConnection(controller: ActorRef, connectionFactory: TCPActorFactory, address: InetSocketAddress) extends Actor with ActorLogging {
-  val connection = connectionFactory.newActor(context, address, self)
+class TCPConnection(controller: ActorRef, address: InetSocketAddress) extends Actor with ActorLogging {
+  val connection = TCPClient.newInstance(context, address, self)
 
   val id2player = mutable.Map[Int, String]()
   val player2id = mutable.Map[String, Int]()
@@ -78,17 +79,12 @@ class TCPConnection(controller: ActorRef, connectionFactory: TCPActorFactory, ad
 }
 
 object TCPConnection {
-  def newServer(factory: ActorRefFactory, address: InetSocketAddress, controller: ActorRef): ActorRef = {
-    newInstance(factory, controller, TCPServerFactory, address)
-  }
-
   def newClient(factory: ActorRefFactory, address: InetSocketAddress, controller: ActorRef): ActorRef = {
-    newInstance(factory, controller, TCPClientFactory, address)
+    newInstance(factory, controller, address)
   }
 
-  def newInstance(system: ActorRefFactory, controller: ActorRef,
-                  connectionFactory: TCPActorFactory, address: InetSocketAddress): ActorRef = {
-    system.actorOf(Props(new TCPConnection(controller, connectionFactory, address)), "TCPConnection")
+  def newInstance(system: ActorRefFactory, controller: ActorRef, address: InetSocketAddress): ActorRef = {
+    system.actorOf(Props(new TCPConnection(controller, address)), "TCPConnection")
   }
 
 }

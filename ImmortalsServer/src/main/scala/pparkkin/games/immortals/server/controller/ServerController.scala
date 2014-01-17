@@ -2,8 +2,8 @@ package pparkkin.games.immortals.server.controller
 
 import akka.actor._
 import java.net.InetSocketAddress
-import pparkkin.games.immortals.server.game.{Start, ImmortalsGame}
-import pparkkin.games.immortals.tcp.TCPConnection
+import pparkkin.games.immortals.server.game.ImmortalsGame
+import pparkkin.games.immortals.server.tcp.TCPConnection
 import pparkkin.games.immortals.messages._
 import pparkkin.games.immortals.messages.Welcome
 import pparkkin.games.immortals.messages.Update

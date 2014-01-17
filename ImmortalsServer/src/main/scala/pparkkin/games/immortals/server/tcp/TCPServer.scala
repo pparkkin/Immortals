@@ -1,4 +1,4 @@
-package pparkkin.games.immortals.tcp
+package pparkkin.games.immortals.server.tcp
 
 import akka.actor._
 import java.net.InetSocketAddress
@@ -31,7 +31,7 @@ class TCPServer(address: InetSocketAddress, dataProcessor: ActorRef) extends Act
     case Send(id, bytes) =>
       log.debug(s"Sending $bytes to socket id $id.")
       id match {
-        case TCPClient.UNDEFINED_CONN_ID =>
+        case TCPServer.UNDEFINED_CONN_ID =>
           id2socket.map((e) => e._2.write(bytes))
         case i =>
           id2socket.get(i)
@@ -48,14 +48,9 @@ class TCPServer(address: InetSocketAddress, dataProcessor: ActorRef) extends Act
 }
 
 object TCPServer {
-//  def newInstance(system: ActorRefFactory, address: InetSocketAddress, controller: ActorRef): ActorRef = {
-//    val dp = TCPConnection.newInstance(system, controller)
-//    system.actorOf(Props(new TCPServer(address, dp)), "TCPServer")
-//  }
-}
+  val UNDEFINED_CONN_ID: Int = -1
 
-object TCPServerFactory extends TCPActorFactory {
-  def newActor(factory: ActorRefFactory, address: InetSocketAddress, dataProcessor: ActorRef): ActorRef = {
-    factory.actorOf(Props(new TCPServer(address, dataProcessor)), "TCPServer")
+  def newInstance(system: ActorRefFactory, address: InetSocketAddress, dp: ActorRef): ActorRef = {
+    system.actorOf(Props(new TCPServer(address, dp)), "TCPServer")
   }
 }

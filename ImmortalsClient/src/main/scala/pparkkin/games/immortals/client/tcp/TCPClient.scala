@@ -1,4 +1,4 @@
-package pparkkin.games.immortals.tcp
+package pparkkin.games.immortals.client.tcp
 
 import akka.actor._
 import java.net.InetSocketAddress
@@ -28,15 +28,10 @@ class TCPClient(address: InetSocketAddress, dataProcessor: ActorRef) extends Act
 }
 
 object TCPClient {
-//  def connect(system: ActorRefFactory, address: InetSocketAddress, controller: ActorRef): ActorRef = {
-//    val dp = TCPConnection.newInstance(system, controller)
-//    system.actorOf(Props(new TCPClient(address, dp)), "TCPClient")
-//  }
   val UNDEFINED_CONN_ID: Int = -1
-}
 
-object TCPClientFactory extends TCPActorFactory {
-  def newActor(factory: ActorRefFactory, address: InetSocketAddress, dataProcessor: ActorRef): ActorRef = {
-    factory.actorOf(Props(new TCPClient(address, dataProcessor)), "TCPClient")
+  def newInstance(system: ActorRefFactory, address: InetSocketAddress, dp: ActorRef): ActorRef = {
+    system.actorOf(Props(new TCPClient(address, dp)), "TCPClient")
   }
+
 }
