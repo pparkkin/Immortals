@@ -9,6 +9,7 @@ import pparkkin.games.immortals.serializers.{WelcomeSerializer, PlayersSerialize
 import pparkkin.games.immortals.messages.Welcome
 import pparkkin.games.immortals.messages.Update
 import pparkkin.games.immortals.messages.Join
+import akka.event.LoggingAdapter
 
 // Control messages
 case class ConnectionReady()
@@ -18,11 +19,9 @@ case class Process(id: Int, bytes: ByteString)
 
 case class Send(id: Int, bytes: ByteString)
 
-class TCPConnection(controller: ActorRef, address: InetSocketAddress) extends Actor with ActorLogging {
-  val connection = TCPServer.newInstance(context, address, self)
-
-  val id2player = mutable.Map[Int, String]()
-  val player2id = mutable.Map[String, Int]()
+trait TCPConnection extends Actor with ActorLogging {
+  val controller: ActorRef
+  val connection: ActorRef
 
   def receive = {
     case ConnectionReady =>
@@ -33,16 +32,12 @@ class TCPConnection(controller: ActorRef, address: InetSocketAddress) extends Ac
       bytes(0) match {
         case 0x4a =>
           val player = bytes.drop(1).decodeString("UTF-8")
-          id2player.put(id, player)
-          player2id.put(player, id)
           controller ! Join(player)
         case 0x57 =>
-          id2player.get(id)
-            .map((p) => controller ! WelcomeSerializer.deserialize(bytes.drop(1)))
-            .getOrElse(log.warning(s"Could not find player id $id."))
+          controller ! WelcomeSerializer.deserialize(bytes.drop(1))
         case 0x41 =>
           val player = bytes.drop(1).decodeString("UTF-8")
-          player2id.get(player).map((i) => controller ! WelcomeAck(player))
+          controller ! WelcomeAck(player)
         case 0x55 =>
           log.debug("Received update.")
           controller ! Update(BoardSerializer.deserialize(bytes.drop(1)))
@@ -55,13 +50,10 @@ class TCPConnection(controller: ActorRef, address: InetSocketAddress) extends Ac
     case Join(player) =>
       log.debug(s"Received join from $player.")
       connection ! Send(TCPServer.UNDEFINED_CONN_ID, ByteString("J"+player))
-      id2player.put(TCPServer.UNDEFINED_CONN_ID, player)
-      player2id.put(player, TCPServer.UNDEFINED_CONN_ID)
     case w: Welcome =>
       log.debug(s"Received Welcome.")
-      player2id.get(w.player)
-        .map(connection ! Send(_, ByteString("W") ++ WelcomeSerializer.serialize(w)))
-        .getOrElse(log.warning(s"Unknown player ${w.player}."))
+      // TCPServer.UNDEFINED_CONN_ID below is incorrect. Should be id.
+      connection ! Send(TCPServer.UNDEFINED_CONN_ID, ByteString("W") ++ WelcomeSerializer.serialize(w))
     case WelcomeAck(player) =>
       log.debug("Received WelcomeAck.")
       connection ! Send(TCPServer.UNDEFINED_CONN_ID, ByteString("A"+player))
@@ -78,13 +70,3 @@ class TCPConnection(controller: ActorRef, address: InetSocketAddress) extends Ac
   }
 }
 
-object TCPConnection {
-  def newServer(factory: ActorRefFactory, address: InetSocketAddress, controller: ActorRef): ActorRef = {
-    newInstance(factory, controller, address)
-  }
-
-  def newInstance(system: ActorRefFactory, controller: ActorRef, address: InetSocketAddress): ActorRef = {
-    system.actorOf(Props(new TCPConnection(controller, address)), "TCPConnection")
-  }
-
-}

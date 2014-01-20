@@ -3,7 +3,7 @@ package pparkkin.games.immortals.server.controller
 import akka.actor._
 import java.net.InetSocketAddress
 import pparkkin.games.immortals.server.game.ImmortalsGame
-import pparkkin.games.immortals.server.tcp.TCPConnection
+import pparkkin.games.immortals.server.tcp.TCPListener
 import pparkkin.games.immortals.messages._
 import pparkkin.games.immortals.messages.Welcome
 import pparkkin.games.immortals.messages.Update
@@ -13,7 +13,7 @@ import pparkkin.games.immortals.server.game.Start
 
 class ServerController(address: InetSocketAddress, name: String) extends Actor with ActorLogging {
   val game = ImmortalsGame.newInstance(context, self, name)
-  val listener = TCPConnection.newServer(context, address, self)
+  val listener = TCPListener.newServer(context, address, self)
   game ! Start
 
   def receive = {
