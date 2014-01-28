@@ -16,8 +16,10 @@ case class ConnectionReady()
 
 // Messages to/from network
 case class Process(id: Int, bytes: ByteString)
-
 case class Send(id: Int, bytes: ByteString)
+
+// Message to create a new client connection
+case class NewClientConnection(id: Int)
 
 trait TCPConnection extends Actor with ActorLogging {
   val game: ActorRef
@@ -65,6 +67,9 @@ trait TCPConnection extends Actor with ActorLogging {
       log.debug("Received a player position update.")
       connection ! Send(TCPServer.UNDEFINED_CONN_ID,
         ByteString("P") ++ PlayersSerializer.serialize(pp))
+    case NewClientConnection(id) =>
+      log.debug(s"New connection requested for $id.")
+      sender ! self
     case m =>
       log.warning(s"Unknown message $m.")
   }
