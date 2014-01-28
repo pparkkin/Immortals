@@ -20,30 +20,30 @@ case class Process(id: Int, bytes: ByteString)
 case class Send(id: Int, bytes: ByteString)
 
 trait TCPConnection extends Actor with ActorLogging {
-  val controller: ActorRef
+  val game: ActorRef
   val connection: ActorRef
 
   def receive = {
     case ConnectionReady =>
       log.debug("Connection ready.")
-      controller ! ConnectionReady
+      game ! ConnectionReady
     case Process(id, bytes) =>
       log.debug(s"Connection $id sent $bytes.")
       bytes(0) match {
         case 0x4a =>
           val player = bytes.drop(1).decodeString("UTF-8")
-          controller ! Join(player)
+          game ! Join(player)
         case 0x57 =>
-          controller ! WelcomeSerializer.deserialize(bytes.drop(1))
+          game ! WelcomeSerializer.deserialize(bytes.drop(1))
         case 0x41 =>
           val player = bytes.drop(1).decodeString("UTF-8")
-          controller ! WelcomeAck(player)
+          game ! WelcomeAck(player)
         case 0x55 =>
           log.debug("Received update.")
-          controller ! Update(BoardSerializer.deserialize(bytes.drop(1)))
+          game ! Update(BoardSerializer.deserialize(bytes.drop(1)))
         case 0x50 =>
           log.debug("Received player positions.")
-          controller ! PlayerPositions(PlayersSerializer.deserialize(bytes.drop(1)))
+          game ! PlayerPositions(PlayersSerializer.deserialize(bytes.drop(1)))
         case t =>
           log.info(s"Unknown message type $t.")
       }
