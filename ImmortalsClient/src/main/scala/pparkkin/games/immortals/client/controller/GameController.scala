@@ -26,8 +26,12 @@ class GameController(address: InetSocketAddress, player: String) extends Actor w
       server ! Join(player)
     case Welcome(player, game, board) =>
       log.debug(s"Welcome received from $game for $player.")
-      frame = Some(GameFrame.open(context, self, board))
-      server ! WelcomeAck(player)
+      frame match {
+        case None =>
+          frame = Some(GameFrame.open(context, self, board))
+          server ! WelcomeAck(player)
+        case Some(f) => // noop
+      }
     case Update(board) =>
       log.debug("Received updated board.")
       frame.map(_ ! DisplayBoard(board))
