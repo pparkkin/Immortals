@@ -20,7 +20,7 @@ class TCPServerConnection(name: String, address: InetSocketAddress) extends TCPC
       game ! ConnectionReady
     case NewClientConnection(id) =>
       log.debug(s"New connection requested for $id.")
-      sender ! self
+      sender ! TCPClientConnection.newInstance(context, game, connection, id)
 
   }
 
