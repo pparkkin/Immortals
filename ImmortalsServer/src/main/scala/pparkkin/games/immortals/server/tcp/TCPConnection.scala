@@ -12,17 +12,16 @@ import pparkkin.games.immortals.messages.Join
 import akka.event.LoggingAdapter
 
 // Messages to/from network
-case class Process(id: Int, bytes: ByteString)
-case class Send(id: Int, bytes: ByteString)
+case class Process(bytes: ByteString)
+case class Send(bytes: ByteString)
 
 trait TCPConnection extends Actor with ActorLogging {
   val game: ActorRef
   val connection: ActorRef
-  val id: Int
 
   def receiveFromNetwork: Receive = {
-    case Process(id, bytes) =>
-      log.debug(s"Connection $id sent $bytes.")
+    case Process(bytes) =>
+      log.debug(s"Connection sent $bytes.")
       bytes(0) match {
         case 0x4a =>
           val player = bytes.drop(1).decodeString("UTF-8")
@@ -47,19 +46,19 @@ trait TCPConnection extends Actor with ActorLogging {
   def receiveFromGame: Receive = {
     case Join(player) =>
       log.debug(s"Received join from $player.")
-      connection ! Send(id, ByteString("J"+player))
+      connection ! Send(ByteString("J"+player))
     case w: Welcome =>
       log.debug(s"Received Welcome.")
-      connection ! Send(id, ByteString("W") ++ WelcomeSerializer.serialize(w))
+      connection ! Send(ByteString("W") ++ WelcomeSerializer.serialize(w))
     case WelcomeAck(player) =>
       log.debug("Received WelcomeAck.")
-      connection ! Send(id, ByteString("A"+player))
+      connection ! Send(ByteString("A"+player))
     case Update(board) =>
       log.debug("Received a board update.")
-      connection ! Send(id, ByteString("U") ++ BoardSerializer.serialize(board))
+      connection ! Send(ByteString("U") ++ BoardSerializer.serialize(board))
     case PlayerPositions(pp) =>
       log.debug("Received a player position update.")
-      connection ! Send(id, ByteString("P") ++ PlayersSerializer.serialize(pp))
+      connection ! Send(ByteString("P") ++ PlayersSerializer.serialize(pp))
 
   }
 

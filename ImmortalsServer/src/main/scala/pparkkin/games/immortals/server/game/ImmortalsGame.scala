@@ -23,6 +23,7 @@ class ImmortalsGame(controller: ActorRef, name: String) extends Actor with Actor
   private var board = GameOfLife.randomBoard(BOARD_WIDTH, BOARD_HEIGHT)
   private var tick: Option[Cancellable] = None
   private var players = Players.empty
+  private var playerConns = Map.empty[String, ActorRef]
 
   def receive = {
     case Start =>
@@ -35,7 +36,8 @@ class ImmortalsGame(controller: ActorRef, name: String) extends Actor with Actor
     case WelcomeAck(player) =>
       log.debug(s"Received welcome ack from $player.")
       players = players + (player -> randomPosition(BOARD_WIDTH, BOARD_HEIGHT))
-      controller ! PlayerPositions(players)
+      playerConns = playerConns + (player -> sender)
+      playerConns.map((e) => e._2 ! PlayerPositions(players))
     case End =>
       tick.map(_.cancel())
         .getOrElse(log.warning("No tick when stopping game."))
@@ -43,7 +45,7 @@ class ImmortalsGame(controller: ActorRef, name: String) extends Actor with Actor
     case Tick =>
       log.debug("Tick.")
       board = GameOfLife.tick(board)
-      controller ! Update(board)
+      playerConns.map((e) => e._2 ! Update(board))
   }
 
   def randomPosition(x: Int, y: Int) = (Random.nextInt(x), Random.nextInt(y))

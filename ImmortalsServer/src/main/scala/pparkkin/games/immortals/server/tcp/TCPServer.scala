@@ -4,7 +4,7 @@ import akka.actor._
 import scala.concurrent.duration._
 import java.net.InetSocketAddress
 import scala.collection.mutable
-import akka.actor.IO.SocketHandle
+import akka.actor.IO.{Handle, SocketHandle}
 import akka.util.{Timeout, ByteString}
 
 class TCPServer(address: InetSocketAddress, dataProcessor: ActorRef) extends Actor with ActorLogging {
@@ -19,37 +19,36 @@ class TCPServer(address: InetSocketAddress, dataProcessor: ActorRef) extends Act
 
   var idCount = 0
 
-  val conn2socket = mutable.Map[ActorRef, SocketHandle]()
-  val socket2conn = mutable.Map[SocketHandle, ActorRef]()
+  val conn2socket = mutable.Map[ActorRef, Handle]()
+  val socket2conn = mutable.Map[Handle, ActorRef]()
 
   def receive = {
+    case IO.Listening(server, address) =>
+      log.debug("Listening.")
+      val socket = server
+      conn2socket.put(dataProcessor, socket)
+      socket2conn.put(socket, dataProcessor)
     case IO.NewClient(server) =>
       log.debug("New client.")
       val socket = server.accept()
-      val id = idCount ; idCount += 1
-      val cf = (dataProcessor ? NewClientConnection(id)).mapTo[ActorRef]
+      val cf = (dataProcessor ? NewClientConnection).mapTo[ActorRef]
       cf.onSuccess {
         case conn =>
           conn2socket.put(conn, socket)
           socket2conn.put(socket, conn)
       }
     case IO.Read(socket, bytes) =>
-      socket2conn.get(socket.asSocket)
-        .map(_ ! Process(TCPServer.UNDEFINED_CONN_ID, bytes))
+      socket2conn.get(socket)
+        .map(_ ! Process(bytes))
         .getOrElse(log.warning("Read from unknown socket."))
-    case Send(id, bytes) =>
-      log.debug(s"Sending $bytes to socket id $id.")
-      id match {
-        case TCPServer.UNDEFINED_CONN_ID =>
-          conn2socket.map((e) => e._2.write(bytes))
-        case i =>
-          conn2socket.get(sender)
-            .map(_.write(bytes))
-            .getOrElse(log.warning(s"Could not find socket for id $id."))
-      }
+    case Send(bytes) =>
+      log.debug(s"Sending $bytes to socket.")
+      conn2socket.get(sender)
+        .map(_.asWritable.write(bytes))
+        .getOrElse(log.warning("Could not find socket for data."))
     case IO.Closed(socket, cause) =>
-      socket2conn.get(socket.asSocket)
-        .map(_ ! Process(TCPServer.UNDEFINED_CONN_ID, ByteString("Q")))
+      socket2conn.get(socket)
+        .map(_ ! Process(ByteString("Q")))
         .getOrElse(log.warning("Unknown player closed socket."))
     case m =>
       log.warning(s"Unknown message $m")
