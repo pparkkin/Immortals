@@ -11,24 +11,16 @@ import pparkkin.games.immortals.messages.Update
 import pparkkin.games.immortals.messages.Join
 import akka.event.LoggingAdapter
 
-// Control messages
-case class ConnectionReady()
-
 // Messages to/from network
 case class Process(id: Int, bytes: ByteString)
 case class Send(id: Int, bytes: ByteString)
 
-// Message to create a new client connection
-case class NewClientConnection(id: Int)
-
 trait TCPConnection extends Actor with ActorLogging {
   val game: ActorRef
   val connection: ActorRef
+  val id: Int
 
-  def receive = {
-    case ConnectionReady =>
-      log.debug("Connection ready.")
-      game ! ConnectionReady
+  def receiveFromNetwork: Receive = {
     case Process(id, bytes) =>
       log.debug(s"Connection $id sent $bytes.")
       bytes(0) match {
@@ -49,29 +41,27 @@ trait TCPConnection extends Actor with ActorLogging {
         case t =>
           log.info(s"Unknown message type $t.")
       }
+
+  }
+
+  def receiveFromGame: Receive = {
     case Join(player) =>
       log.debug(s"Received join from $player.")
-      connection ! Send(TCPServer.UNDEFINED_CONN_ID, ByteString("J"+player))
+      connection ! Send(id, ByteString("J"+player))
     case w: Welcome =>
       log.debug(s"Received Welcome.")
-      // TCPServer.UNDEFINED_CONN_ID below is incorrect. Should be id.
-      connection ! Send(TCPServer.UNDEFINED_CONN_ID, ByteString("W") ++ WelcomeSerializer.serialize(w))
+      connection ! Send(id, ByteString("W") ++ WelcomeSerializer.serialize(w))
     case WelcomeAck(player) =>
       log.debug("Received WelcomeAck.")
-      connection ! Send(TCPServer.UNDEFINED_CONN_ID, ByteString("A"+player))
+      connection ! Send(id, ByteString("A"+player))
     case Update(board) =>
       log.debug("Received a board update.")
-      connection ! Send(TCPServer.UNDEFINED_CONN_ID,
-        ByteString("U") ++ BoardSerializer.serialize(board))
+      connection ! Send(id, ByteString("U") ++ BoardSerializer.serialize(board))
     case PlayerPositions(pp) =>
       log.debug("Received a player position update.")
-      connection ! Send(TCPServer.UNDEFINED_CONN_ID,
-        ByteString("P") ++ PlayersSerializer.serialize(pp))
-    case NewClientConnection(id) =>
-      log.debug(s"New connection requested for $id.")
-      sender ! self
-    case m =>
-      log.warning(s"Unknown message $m.")
+      connection ! Send(id, ByteString("P") ++ PlayersSerializer.serialize(pp))
+
   }
+
 }
 
