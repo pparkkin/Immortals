@@ -1,5 +1,8 @@
 package pparkkin.games.immortals.client.controller
 
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext
+import ExecutionContext.Implicits.global
 import akka.actor._
 import pparkkin.games.immortals.client.ui.GameFrame
 import pparkkin.games.immortals.client.tcp.TCPConnection
@@ -13,8 +16,9 @@ import pparkkin.games.immortals.messages.PlayerPositions
 import pparkkin.games.immortals.client.ui.DisplayPlayers
 import pparkkin.games.immortals.client.tcp.ConnectionReady
 import scala.Some
+import scala.util.Random
 
-case class Quit()
+case class Tick()
 
 class GameController(address: InetSocketAddress, player: String) extends Actor with ActorLogging {
   var frame: Option[ActorRef] = None
@@ -38,8 +42,29 @@ class GameController(address: InetSocketAddress, player: String) extends Actor w
     case PlayerPositions(players) =>
       log.debug("Received updated player positions.")
       frame.map(_ ! DisplayPlayers(players))
+      context.system.scheduler.scheduleOnce(randomTick.milliseconds, self, Tick)
+    case Tick =>
+      server ! Move(player, randomMove)
+      context.system.scheduler.scheduleOnce(randomTick.milliseconds, self, Tick)
     case m =>
       log.info(s"Unknown message $m.")
+  }
+
+  def randomTick: Int = Random.nextInt(200) + 200
+
+  def randomMove: (Int, Int) = {
+    if (Random.nextBoolean) {
+      if (Random.nextBoolean)
+        (1, 0)
+      else
+        (-1, 0)
+    } else {
+      if (Random.nextBoolean)
+        (0, 1)
+      else
+        (0, -1)
+    }
+
   }
 }
 
