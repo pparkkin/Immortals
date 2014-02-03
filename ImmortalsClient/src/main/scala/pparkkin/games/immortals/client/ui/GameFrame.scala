@@ -2,12 +2,12 @@ package pparkkin.games.immortals.client.ui
 
 import swing.Frame
 import akka.actor._
-import pparkkin.games.immortals.client.controller.Quit
 import scala.swing.event.WindowClosing
 import pparkkin.games.immortals.datatypes.{Players, Board}
 
 case class DisplayBoard(board: Board)
 case class DisplayPlayers(players: Players)
+case class CloseDisplay()
 
 class GameFrame(controller: ActorRef, board: Board) extends Actor with ActorLogging {
   val panel = new BoardPanel(board)
@@ -19,7 +19,7 @@ class GameFrame(controller: ActorRef, board: Board) extends Actor with ActorLogg
     reactions += {
       case WindowClosing(w) =>
         this.dispose()
-        controller ! Quit
+        controller ! CloseDisplay
     }
   }
   frame.visible = true
