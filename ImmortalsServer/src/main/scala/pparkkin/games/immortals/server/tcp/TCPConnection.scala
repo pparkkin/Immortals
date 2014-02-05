@@ -5,7 +5,7 @@ import akka.util.ByteString
 import java.net.InetSocketAddress
 import pparkkin.games.immortals.messages._
 import scala.collection.mutable
-import pparkkin.games.immortals.serializers.{WelcomeSerializer, PlayersSerializer, BoardSerializer}
+import pparkkin.games.immortals.serializers.{MoveSerializer, WelcomeSerializer, PlayersSerializer, BoardSerializer}
 import pparkkin.games.immortals.messages.Welcome
 import pparkkin.games.immortals.messages.Update
 import pparkkin.games.immortals.messages.Join
@@ -37,6 +37,9 @@ trait TCPConnection extends Actor with ActorLogging {
         case 0x50 =>
           log.debug("Received player positions.")
           game ! PlayerPositions(PlayersSerializer.deserialize(bytes.drop(1)))
+        case 0x4D =>
+          log.debug("Received move from network.")
+          game ! MoveSerializer.deserialize(bytes.drop(1))
         case t =>
           log.info(s"Unknown message type $t.")
       }
