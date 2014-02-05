@@ -5,7 +5,7 @@ import akka.util.ByteString
 import java.net.InetSocketAddress
 import pparkkin.games.immortals.messages._
 import scala.collection.mutable
-import pparkkin.games.immortals.serializers.{WelcomeSerializer, PlayersSerializer, BoardSerializer}
+import pparkkin.games.immortals.serializers.{MoveSerializer, WelcomeSerializer, PlayersSerializer, BoardSerializer}
 import pparkkin.games.immortals.messages.Welcome
 import pparkkin.games.immortals.messages.Update
 import pparkkin.games.immortals.messages.Join
@@ -73,6 +73,10 @@ class TCPConnection(controller: ActorRef, address: InetSocketAddress) extends Ac
       log.debug("Received a player position update.")
       connection ! Send(TCPClient.UNDEFINED_CONN_ID,
         ByteString("P") ++ PlayersSerializer.serialize(pp))
+    case m: Move =>
+      log.debug("Received a move.")
+      connection ! Send(TCPClient.UNDEFINED_CONN_ID,
+        ByteString("M") ++ MoveSerializer.serialize(m))
     case m =>
       log.warning(s"Unknown message $m.")
   }
