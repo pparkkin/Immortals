@@ -46,9 +46,21 @@ class ImmortalsGame(controller: ActorRef, name: String) extends Actor with Actor
       log.debug("Tick.")
       board = GameOfLife.tick(board)
       playerConns.map((e) => e._2 ! Update(board))
+    case Move(player, move) =>
+      log.debug("Move.")
+      players = players + (player -> updatePosition(players(player), move))
+      playerConns.map((e) => e._2 ! PlayerPositions(players))
+    case m =>
+      log.info(s"Unknown message $m.")
   }
 
   def randomPosition(x: Int, y: Int) = (Random.nextInt(x), Random.nextInt(y))
+
+  def updatePosition(pos: (Int, Int), move: (Int, Int)) = {
+    val x = math.min(math.max(pos._1+move._1, 0), BOARD_WIDTH-1)
+    val y = math.min(math.max(pos._2+move._2, 0), BOARD_HEIGHT-1)
+    (x, y)
+  }
 }
 
 object ImmortalsGame {
