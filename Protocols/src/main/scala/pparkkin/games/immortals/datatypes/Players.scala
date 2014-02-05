@@ -3,6 +3,7 @@ package pparkkin.games.immortals.datatypes
 import scala.collection.immutable.Map
 
 class Players private (val c: Map[String, (Int, Int)]) {
+  def apply(key: String): (Int, Int) = c(key)
   def +(kv: (String, (Int, Int))) =
     new Players(c + kv)
   def size = c.size
