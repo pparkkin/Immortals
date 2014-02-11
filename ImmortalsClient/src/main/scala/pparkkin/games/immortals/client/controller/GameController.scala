@@ -18,7 +18,10 @@ import pparkkin.games.immortals.client.tcp.ConnectionReady
 import scala.Some
 import scala.util.Random
 
-case class Tick()
+case class MoveDown()
+case class MoveLeft()
+case class MoveRight()
+case class MoveUp()
 
 class GameController(address: InetSocketAddress, player: String) extends Actor with ActorLogging {
   var frame: Option[ActorRef] = None
@@ -42,30 +45,23 @@ class GameController(address: InetSocketAddress, player: String) extends Actor w
     case PlayerPositions(players) =>
       log.debug("Received updated player positions.")
       frame.map(_ ! DisplayPlayers(players))
-      context.system.scheduler.scheduleOnce(randomTick.milliseconds, self, Tick)
-    case Tick =>
-      server ! Move(player, randomMove)
-      context.system.scheduler.scheduleOnce(randomTick.milliseconds, self, Tick)
+    case MoveDown =>
+      server ! Move(player, downMove)
+    case MoveLeft =>
+      server ! Move(player, leftMove)
+    case MoveRight =>
+      server ! Move(player, rightMove)
+    case MoveUp =>
+      server ! Move(player, upMove)
     case m =>
       log.info(s"Unknown message $m.")
   }
 
-  def randomTick: Int = Random.nextInt(200) + 200
+  val rightMove = (1, 0)
+  val leftMove = (-1, 0)
+  val upMove = (0, 1)
+  val downMove = (0, -1)
 
-  def randomMove: (Int, Int) = {
-    if (Random.nextBoolean) {
-      if (Random.nextBoolean)
-        (1, 0)
-      else
-        (-1, 0)
-    } else {
-      if (Random.nextBoolean)
-        (0, 1)
-      else
-        (0, -1)
-    }
-
-  }
 }
 
 object GameController {
