@@ -2,8 +2,9 @@ package pparkkin.games.immortals.client.ui
 
 import swing.Frame
 import akka.actor._
-import scala.swing.event.WindowClosing
+import scala.swing.event.{Key, KeyReleased, WindowClosing}
 import pparkkin.games.immortals.datatypes.{Players, Board}
+import pparkkin.games.immortals.client.controller.{MoveUp, MoveDown, MoveRight, MoveLeft}
 
 case class DisplayBoard(board: Board)
 case class DisplayPlayers(players: Players)
@@ -20,6 +21,19 @@ class GameFrame(controller: ActorRef, board: Board) extends Actor with ActorLogg
       case WindowClosing(w) =>
         this.dispose()
         controller ! CloseDisplay
+      case KeyReleased(_, key, _, _) =>
+        key match {
+          case Key.KpDown =>
+            controller ! MoveDown
+          case Key.KpLeft =>
+            controller ! MoveLeft
+          case Key.KpRight =>
+            controller ! MoveRight
+          case Key.KpUp =>
+            controller ! MoveUp
+          case k =>
+            log.info(s"Unknown key press $k.")
+        }
     }
   }
   frame.visible = true
