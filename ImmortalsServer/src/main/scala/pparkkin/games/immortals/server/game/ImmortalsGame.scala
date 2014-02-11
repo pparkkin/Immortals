@@ -45,6 +45,7 @@ class ImmortalsGame(controller: ActorRef, name: String) extends Actor with Actor
     case Tick =>
       log.debug("Tick.")
       board = GameOfLife.tick(board)
+      players.foreach((e) => board = board.updated(e._2._1, e._2._2, true))
       playerConns.map((e) => e._2 ! Update(board))
     case Move(player, move) =>
       log.debug("Move.")
