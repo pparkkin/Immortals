@@ -23,6 +23,10 @@ class Board private (val c: IndexedSeq[IndexedSeq[Boolean]]) {
     c.map(_.map(f))
   }
 
+  def updated(i: Int, j: Int, b: Boolean) = {
+    Board(c.updated(i, c(i).updated(j, b)))
+  }
+
 }
 
 object Board {
