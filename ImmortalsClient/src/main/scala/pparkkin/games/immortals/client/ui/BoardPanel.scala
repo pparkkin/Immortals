@@ -2,12 +2,22 @@ package pparkkin.games.immortals.client.ui
 
 import scala.swing.{Graphics2D, Panel}
 import java.awt.Color
-import javax.swing.BorderFactory
 import pparkkin.games.immortals.datatypes.{Players, Board}
+import scala.swing.event.{Key, KeyReleased}
+import akka.actor.ActorRef
 
-class BoardPanel(var board: Board, var players: Players = Players.empty) extends Panel {
+class BoardPanel(val parent: ActorRef, var board: Board, var players: Players = Players.empty) extends Panel {
   val SQUARE_W = 12
   val SQUARE_H = 12
+
+  listenTo(keys)
+  reactions += {
+    case KeyReleased(_, key, _, _) =>
+      parent ! KeyPress(key)
+  }
+
+  focusable = true
+  requestFocus()
 
   def updateBoard(board: Board) {
     this.board = board

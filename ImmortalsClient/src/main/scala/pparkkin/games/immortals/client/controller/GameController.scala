@@ -57,10 +57,10 @@ class GameController(address: InetSocketAddress, player: String) extends Actor w
       log.info(s"Unknown message $m.")
   }
 
-  val rightMove = (1, 0)
-  val leftMove = (-1, 0)
-  val upMove = (0, 1)
-  val downMove = (0, -1)
+  val rightMove = (0, 1)
+  val leftMove = (0, -1)
+  val upMove = (-1, 0)
+  val downMove = (1, 0)
 
 }
 
